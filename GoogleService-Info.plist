@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>874280556796-cc36ihhoiasr0r1dfko7rreq69fbsppe.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.874280556796-cc36ihhoiasr0r1dfko7rreq69fbsppe</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCj6CtX8mlcP2Hvd7RgSixvmc1zgNjFbGI</string>
+	<key>GCM_SENDER_ID</key>
+	<string>874280556796</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.hygeiababy.app</string>
+	<key>PROJECT_ID</key>
+	<string>breast-feet</string>
+	<key>STORAGE_BUCKET</key>
+	<string>breast-feet.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:874280556796:ios:117f6e3d3bc74807e9df79</string>
+</dict>
+</plist>

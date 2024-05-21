@@ -1,0 +1,82 @@
+{
+  "project_info": {
+    "project_number": "874280556796",
+    "project_id": "breast-feet",
+    "storage_bucket": "breast-feet.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:874280556796:android:e57762cb416d8207e9df79",
+        "android_client_info": {
+          "package_name": "app.hygeia"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "874280556796-h97lre4r882h6h33lahadhabn9rba2mk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD6FccXWOt0qNdDmJ4ldOmq75BbmHHAo9k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "874280556796-h97lre4r882h6h33lahadhabn9rba2mk.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "874280556796-4gap8cbugpfkikbnullgfcl1qhj6io2b.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.hygeia"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:874280556796:android:3b4d4cb9f0b1d85ae9df79",
+        "android_client_info": {
+          "package_name": "com.hygeia"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "874280556796-h97lre4r882h6h33lahadhabn9rba2mk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD6FccXWOt0qNdDmJ4ldOmq75BbmHHAo9k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "874280556796-h97lre4r882h6h33lahadhabn9rba2mk.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "874280556796-4gap8cbugpfkikbnullgfcl1qhj6io2b.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.hygeia"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

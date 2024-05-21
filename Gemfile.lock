@@ -1,4 +1,4 @@
-GEM
+reaGEM
   remote: https://rubygems.org/
   specs:
     CFPropertyList (3.0.7)
