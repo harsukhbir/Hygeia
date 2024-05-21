@@ -1,8 +1,7 @@
 import axios from 'axios';
 import {getTimeZone} from 'react-native-localize';
 import {getUniqueId} from 'react-native-device-info';
-
-import {store} from '../store';
+import {store} from '..';
 
 export function getUnauthenticatedInstance() {
   return axios.create({

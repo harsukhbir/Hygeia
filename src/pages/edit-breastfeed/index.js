@@ -14,8 +14,6 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import TextInput from '../../../src/components/TextInput';
 import ButtonComponent from '../../../src/components/ButtonComponent';
-import * as authActions from '../../../src/redux/actions/authActions';
-import * as breastfeedActions from '../../../src/redux/actions/breastfeedActions';
 import {Images} from '../../../src/assets/images';
 import {isEmptyObject, showAlert} from '../../../src/utils/native';
 import TimePicker from 'react-native-24h-timepicker';

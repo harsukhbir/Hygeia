@@ -1,7 +1,5 @@
 import React from 'react';
-import {connect} from 'react-redux';
 import {View, Text, Image} from 'react-native';
-import * as authActions from '../../../../src/redux/actions/authActions';
 import LanguageSwitcher from '../../../../src/components/LanguageSwitcher';
 import ButtonComponent from '../../../../src/components/ButtonComponent';
 import {Images} from '../../../../src/assets/images';

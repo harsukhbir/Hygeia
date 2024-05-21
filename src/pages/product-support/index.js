@@ -1,18 +1,9 @@
 import React from 'react';
-import {connect} from 'react-redux';
-import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  Image,
-  Linking,
-} from 'react-native';
+import {View, Text, ScrollView, Linking, Keyboard} from 'react-native';
 import TextInput from '../../../src/components/TextInput';
 import {translate} from '../../../src/locales/i18n';
 import ButtonComponent from '../../../src/components/ButtonComponent';
 import {isEmpty, showAlert} from '../../../src/utils/native';
-import * as contactFormActions from '../../../src/redux/actions/contactFormActions';
 import styles from './styles';
 
 class ProductSupportScreen extends React.Component {

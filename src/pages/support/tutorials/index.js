@@ -1,9 +1,7 @@
 import React from 'react';
 import {View, Text, TouchableOpacity, Linking} from 'react-native';
-import {connect} from 'react-redux';
 import styles from './styles';
 import LoadingIndicator from '../../../components/LoadingIndicator';
-import {start, end} from '../../../redux/actions/commonActions';
 
 class TutorialsScreen extends React.Component {
   constructor() {

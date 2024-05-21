@@ -1,5 +1,4 @@
 import React from 'react';
-import {connect} from 'react-redux';
 import {
   View,
   Text,
@@ -14,13 +13,11 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import TextInput from '../../../src/components/TextInput';
 import ButtonComponent from '../../../src/components/ButtonComponent';
-import * as authActions from '../../../src/redux/actions/authActions';
-import * as growthActions from '../../../src/redux/actions/growthActions';
 import {isEmptyObject, showAlert} from '../../../src/utils/native';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import {getActiveBaby} from '../../../src/redux/selectors';
 import moment from 'moment';
 import styles from './styles';
+import {getActiveBaby} from '../../store/selectors';
 
 class AddGrowth extends React.Component {
   constructor(props) {

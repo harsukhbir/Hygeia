@@ -1,5 +1,4 @@
 import React from 'react';
-import {connect} from 'react-redux';
 import {
   View,
   Text,
@@ -13,7 +12,6 @@ import LinearGradient from 'react-native-linear-gradient';
 import ButtonComponent from '../../../../src/components/ButtonComponent';
 import {Images} from '../../../../src/assets/images';
 import {isEmpty, showAlert, isEmptyObject} from '../../../../src/utils/native';
-import * as authActions from '../../../../src/redux/actions/authActions';
 import OtpInputs from '../../../../src/components/OtpInputs';
 import {translate} from '../../../../src/locales/i18n';
 import SignupForm from './form';

@@ -1,5 +1,4 @@
 import React from 'react';
-import {connect} from 'react-redux';
 import {
   View,
   Text,
@@ -12,9 +11,7 @@ import RNPickerSelect from 'react-native-picker-select';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import TextInput from '../../../src/components/TextInput';
 import ButtonComponent from '../../../src/components/ButtonComponent';
-import * as authActions from '../../../src/redux/actions/authActions';
-import * as diaperActions from '../../../src/redux/actions/diaperActions';
-import {isEmptyObject, showAlert} from '../../../src/utils/native';
+import {showAlert} from '../../../src/utils/native';
 import TimePicker from 'react-native-24h-timepicker';
 import moment from 'moment';
 import styles from './styles';

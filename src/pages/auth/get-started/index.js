@@ -4,8 +4,6 @@ import {isEmptyObject} from '../../../../src/utils/native';
 import {View, Text, TouchableOpacity, ScrollView} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
-import * as authActions from '../../../../src/redux/actions/authActions';
-import * as userAction from '../../../../src/redux/actions/userAction';
 import GetStartedForm from './form';
 import styles from './styles';
 

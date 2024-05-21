@@ -1,8 +1,8 @@
 import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
-import {fetchPrevAlarmValue} from './trackAction';
 import {loadingEnd, loadingStart} from './commonSlice';
 import {showAPIErrorAlert} from '../../utils/native';
 import Services from '../../services/services';
+import {fetchPrevAlarmValue} from './trackSlice';
 
 const initialState = {
   isAdded: false,
@@ -52,25 +52,26 @@ const alarmSlice = createSlice({
       state.isAdded = false;
     },
   },
-  extraReducers: {
-    [setAlarmAPI.pending]: state => {
-      state.loading = true;
-    },
-    [setAlarmAPI.fulfilled]: state => {
-      state.loading = false;
-    },
-    [setAlarmAPI.rejected]: state => {
-      state.loading = false;
-    },
-    [updateAlarmAPI.pending]: state => {
-      state.loading = true;
-    },
-    [updateAlarmAPI.fulfilled]: state => {
-      state.loading = false;
-    },
-    [updateAlarmAPI.rejected]: state => {
-      state.loading = false;
-    },
+  extraReducers: builder => {
+    builder
+      .addCase(setAlarmAPI.pending, state => {
+        state.loading = true;
+      })
+      .addCase(setAlarmAPI.fulfilled, state => {
+        state.loading = false;
+      })
+      .addCase(setAlarmAPI.rejected, state => {
+        state.loading = false;
+      })
+      .addCase(updateAlarmAPI.pending, state => {
+        state.loading = true;
+      })
+      .addCase(updateAlarmAPI.fulfilled, state => {
+        state.loading = false;
+      })
+      .addCase(updateAlarmAPI.rejected, state => {
+        state.loading = false;
+      });
   },
 });
 

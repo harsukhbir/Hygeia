@@ -37,7 +37,6 @@ export const commonSlice = createSlice({
           '',
           () => {},
         );
-        // Dispatching resetAuthState thunk action to reset authentication state
         action.payload.dispatch(resetAuthState());
       } else {
         let errorMessage =

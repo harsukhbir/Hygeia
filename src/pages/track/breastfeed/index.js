@@ -1,5 +1,4 @@
 import React from 'react';
-import {connect} from 'react-redux';
 import {
   View,
   Text,
@@ -10,10 +9,7 @@ import {
   TouchableHighlight,
   Alert,
 } from 'react-native';
-import * as authActions from '../../../../src/redux/actions/authActions';
-import * as commonActions from '../../../../src/redux/actions/commonActions';
 import ButtonComponent from '../../../../src/components/ButtonComponent';
-import * as breastfeedActions from '../../../../src/redux/actions/breastfeedActions';
 import {Images} from '../../../../src/assets/images';
 import {isEmptyObject} from '../../../../src/utils/native';
 import {
@@ -22,13 +18,12 @@ import {
   MenuOption,
   MenuTrigger,
 } from 'react-native-popup-menu';
-import {getActiveBaby} from '../../../../src/redux/selectors';
 import moment from 'moment';
 // ! fix the foucused
 // import {withNavigationFocus} from '@react-navigation/native';
 import styles from '../styles';
 import SetAlarmComponent from '../components/SetAlarmComponent';
-import {fetchPrevAlarmValue} from '../../../redux/actions/trackAction';
+import {getActiveBaby} from '../../../store/selectors';
 
 class BreastfeedCards extends React.Component {
   constructor(props) {

@@ -1,5 +1,4 @@
 import React from 'react';
-import {connect} from 'react-redux';
 import {
   View,
   Text,
@@ -9,9 +8,6 @@ import {
   Modal,
   TouchableHighlight,
 } from 'react-native';
-import * as authActions from '../../../../src/redux/actions/authActions';
-import * as commonActions from '../../../../src/redux/actions/commonActions';
-import * as bottleActions from '../../../../src/redux/actions/bottleActions';
 import {Images} from '../../../../src/assets/images';
 import {isEmptyObject} from '../../../../src/utils/native';
 import {

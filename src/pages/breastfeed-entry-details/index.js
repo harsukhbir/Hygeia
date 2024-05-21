@@ -1,9 +1,7 @@
 import React from 'react';
-import {connect} from 'react-redux';
 import {View, Text, ScrollView, TouchableOpacity, Image} from 'react-native';
 import TextInput from '../../../src/components/TextInput';
 import ButtonComponent from '../../../src/components/ButtonComponent';
-import * as authActions from '../../../src/redux/actions/authActions';
 import {Images} from '../../../src/assets/images';
 import styles from './styles';
 

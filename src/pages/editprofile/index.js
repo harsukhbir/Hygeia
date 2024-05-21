@@ -1,5 +1,4 @@
 import React from 'react';
-import {connect} from 'react-redux';
 import {
   View,
   Image,
@@ -12,8 +11,6 @@ import RNPickerSelect from 'react-native-picker-select';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import TextInput from '../../../src/components/TextInput';
 import ButtonComponent from '../../../src/components/ButtonComponent';
-import * as authActions from '../../../src/redux/actions/authActions';
-import * as userAction from '../../../src/redux/actions/userAction';
 import {Images} from '../../../src/assets/images';
 import {
   Menu,

@@ -5,7 +5,7 @@ import {Button, Footer, FooterTab, Text} from 'native-base';
 // import { AppTheme } from "../utils/appTheme";
 import {connect} from 'react-redux';
 import {translate} from '../locales/i18n';
-import {setActiveTab} from '../redux/actions/tabAction';
+import {setActiveTab} from '../store/slices/tabSlice';
 const styles = StyleSheet.create({
   footer: {
     paddingBottom: 0,

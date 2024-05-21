@@ -1,4 +1,4 @@
-import * as apiRequest from '../../src/redux/api';
+import * as apiRequest from '../store/api';
 
 export default class Services {
   static handleProductForm = data => {

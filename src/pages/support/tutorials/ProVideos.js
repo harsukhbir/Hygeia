@@ -1,18 +1,9 @@
 import React, {Component} from 'react';
-import {
-  View,
-  Text,
-  Image,
-  ScrollView,
-  TouchableOpacity,
-  Linking,
-} from 'react-native';
+import {View, Text, Image, ScrollView, TouchableOpacity} from 'react-native';
 import {Images} from '../../../../src/assets/images';
-import {connect} from 'react-redux';
 import styles from './styles';
 import VideoModal from './VideoModal';
 import LoadingIndicator from '../../../components/LoadingIndicator';
-import {start, end} from '../../../redux/actions/commonActions';
 
 class ProVideos extends Component {
   constructor() {

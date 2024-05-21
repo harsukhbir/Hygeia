@@ -12,8 +12,6 @@ import RNPickerSelect from 'react-native-picker-select';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import TextInput from '../../../src/components/TextInput';
 import ButtonComponent from '../../../src/components/ButtonComponent';
-import * as authActions from '../../../src/redux/actions/authActions';
-import * as createBabyAction from '../../../src/redux/actions/createBabyAction';
 import {Images} from '../../../src/assets/images';
 import {
   Menu,
