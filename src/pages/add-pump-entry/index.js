@@ -20,6 +20,8 @@ import TimePicker from 'react-native-24h-timepicker';
 import moment from 'moment';
 import styles from './styles';
 import CustomTimePicker from '../../components/CustomTimePicker';
+import {CLEAR_MSG, handlePumpCreate} from '../../store/slices/pumpSlice';
+import {resetAuthState} from '../../store/slices/authSlice';
 import {getActiveBaby} from '../../store/selectors';
 
 class AddPumpEntry extends React.Component {
@@ -81,11 +83,11 @@ class AddPumpEntry extends React.Component {
   componentDidUpdate() {
     const {
       card: {msg},
-      // dispatchClearCard,
+      dispatchClearCard,
       navigation,
     } = this.props;
     if (msg === 'ADD_PUMP_SUCCESS') {
-      // dispatchClearCard();
+      dispatchClearCard();
       this.setState(() => {
         showAlert('Success', 'Pump entry created successfully', '', () => {
           navigation.navigate('Track', {activeTab: 'Pump'});
@@ -283,7 +285,7 @@ class AddPumpEntry extends React.Component {
       selectedAmount,
     } = this.state;
     const {
-      // dispatchPumpCreate,
+      dispatchPumpCreate,
       activeBaby,
       navigation: {
         state: {params},
@@ -331,7 +333,7 @@ class AddPumpEntry extends React.Component {
     };
     // return;
     if (!isEmptyObject(data)) {
-      // dispatchPumpCreate(data);
+      dispatchPumpCreate(data);
     }
   }
 
@@ -764,15 +766,14 @@ class AddPumpEntry extends React.Component {
 }
 
 const mapStateToProps = state => ({
-  card: state.pumpReducer,
+  card: state.pump,
   activeBaby: getActiveBaby(state),
 });
 
-// const mapDispatchToProps = {
-//   dispatchPumpCreate: data => pumpActions.handlePumpCreate(data),
-//   dispatchClearCard: () => pumpActions.clearMsg(),
-//   dispatchResetAuthState: () => authActions.resetAuthState(),
-// };
+const mapDispatchToProps = {
+  dispatchPumpCreate: data => handlePumpCreate(data),
+  dispatchClearCard: () => CLEAR_MSG(),
+  dispatchResetAuthState: () => resetAuthState(),
+};
 
-// export default connect(mapStateToProps, mapDispatchToProps)(AddPumpEntry);
-export default AddPumpEntry;
+export default connect(mapStateToProps, mapDispatchToProps)(AddPumpEntry);

@@ -1,7 +1,9 @@
 import React from 'react';
-import {View} from 'react-native';
+import {View, Keyboard} from 'react-native';
 import TextInput from '../../../../src/components/TextInput';
 import ButtonComponent from '../../../../src/components/ButtonComponent';
+// import CountriesDropDown from "../../../../src/components/CountriesDropDown";
+// import { countryCodes } from "../../../../src/constants";
 import {isEmpty} from '../../../../src/utils/native';
 import {translate} from '../../../../src/locales/i18n';
 import styles from './styles';
@@ -137,6 +139,7 @@ class SignupForm extends React.Component {
       confirm_passwordErrorMessage,
       fullName,
     } = this.state;
+    let {isShowDropDown, onEnableScroll} = this.props;
     return (
       <View style={styles.formContainer}>
         <TextInput
@@ -172,9 +175,7 @@ class SignupForm extends React.Component {
             this.setState({email: value});
           }}
           onSubmitEditing={() => {
-            if (this.phoneInput) {
-              this.phoneInput.focus();
-            }
+            this.phoneInput.focus();
           }}
         />
         <TextInput

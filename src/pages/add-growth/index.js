@@ -1,4 +1,5 @@
 import React from 'react';
+import {connect} from 'react-redux';
 import {
   View,
   Text,
@@ -17,6 +18,8 @@ import {isEmptyObject, showAlert} from '../../../src/utils/native';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import moment from 'moment';
 import styles from './styles';
+import {CLEAR_MSG, handleGrowthCreate} from '../../store/slices/growthSlice';
+import {resetAuthState} from '../../store/slices/authSlice';
 import {getActiveBaby} from '../../store/selectors';
 
 class AddGrowth extends React.Component {
@@ -87,11 +90,11 @@ class AddGrowth extends React.Component {
   componentDidUpdate() {
     const {
       card: {msg},
-      // dispatchClearCard,
+      dispatchClearCard,
       navigation,
     } = this.props;
     if (msg === 'ADD_GROWTH_SUCCESS') {
-      // dispatchClearCard();
+      dispatchClearCard();
       this.setState(() => {
         showAlert('Success', 'Growth created successfully.', '', () => {
           navigation.navigate('Track', {activeTab: 'Growth'});
@@ -117,16 +120,15 @@ class AddGrowth extends React.Component {
 
   saveHandler() {
     const {
+      time,
       NotesValue,
+      selectedAmount,
       selectedHeight,
       value,
       selectedLBWeight,
       selectedOZWeight,
     } = this.state;
-    const {
-      // dispatchGrowthCreate,
-      activeBaby,
-    } = this.props;
+    const {dispatchGrowthCreate, activeBaby} = this.props;
     const data = {
       babyprofile_id: activeBaby.id,
       date: value
@@ -138,7 +140,7 @@ class AddGrowth extends React.Component {
       note: NotesValue,
     };
     if (!isEmptyObject(data)) {
-      // dispatchGrowthCreate(data);
+      dispatchGrowthCreate(data);
     }
   }
 
@@ -169,6 +171,8 @@ class AddGrowth extends React.Component {
       selectedOZWeight,
       selectedLBWeight,
       NotesValue,
+      time,
+      selectedAmount,
       selectedHeight,
       isDatePickerVisible,
       value,
@@ -380,15 +384,14 @@ class AddGrowth extends React.Component {
 }
 
 const mapStateToProps = state => ({
-  card: state.growthReducer,
+  card: state.growth,
   activeBaby: getActiveBaby(state),
 });
 
-// const mapDispatchToProps = {
-//   dispatchGrowthCreate: data => growthActions.handleGrowthCreate(data),
-//   dispatchClearCard: () => growthActions.clearMsg(),
-//   dispatchResetAuthState: () => authActions.resetAuthState(),
-// };
+const mapDispatchToProps = {
+  dispatchGrowthCreate: data => handleGrowthCreate(data),
+  dispatchClearCard: () => CLEAR_MSG(),
+  dispatchResetAuthState: () => resetAuthState(),
+};
 
-// export default connect(mapStateToProps, mapDispatchToProps)(AddGrowth);
-export default AddGrowth;
+export default connect(mapStateToProps, mapDispatchToProps)(AddGrowth);

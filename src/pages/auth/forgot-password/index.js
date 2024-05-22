@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   LayoutAnimation,
   TouchableOpacity,
 } from 'react-native';
+import {connect} from 'react-redux';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import LinearGradient from 'react-native-linear-gradient';
 import ButtonComponent from '../../../../src/components/ButtonComponent';
@@ -18,268 +19,270 @@ import ForgotPasswordForm from './form';
 import ResetPassword from './reset-password';
 import styles from './styles';
 
-const ForgotPasswordScreen = ({auth, navigation}) => {
-  const [state, setState] = useState({
-    email: '',
-    otpErrorMessage: '',
-    OTP: '',
-    formStep: 'forgot-password',
-    token: '',
-    resetOTPInput: false,
-    isKeyboardShow: false,
-  });
-
-  // useEffect(() => {
-  //   const keyboardDidShowListener = Keyboard.addListener(
-  //     'keyboardDidShow',
-  //     () => {
-  //       setState(prevState => ({
-  //         ...prevState,
-  //         isKeyboardShow: true,
-  //       }));
-  //       LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-  //     },
-  //   );
-
-  //   const keyboardDidHideListener = Keyboard.addListener(
-  //     'keyboardDidHide',
-  //     () => {
-  //       setState(prevState => ({
-  //         ...prevState,
-  //         isKeyboardShow: false,
-  //       }));
-  //       LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-  //     },
-  //   );
-
-  //   return () => {
-  //     keyboardDidShowListener.remove();
-  //     keyboardDidHideListener.remove();
-  //   };
-  // }, []);
-
-  useEffect(() => {
-    const handleForgotPassResponse = () => {
-      if (
-        auth?.isForgotPassSuccessful === false &&
-        auth?.isForgotPassSuccessful === true
-      ) {
-        const response = auth?.forgotPassResponse;
-        if (!response.error) {
-          showAlert(response.message, '', '', () => {
-            setState(prevState => ({
-              ...prevState,
-              formStep: 'verify-otp',
-            }));
-          });
-        }
-      }
+class ForgotPasswordScreen extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      email: '',
+      otpErrorMessage: '',
+      OTP: '',
+      // formStep: "verify-otp",
+      // formStep: "reset-password",
+      formStep: 'forgot-password',
+      // formStep: "send-email",
+      // formStep: "successful-reset",
+      token: '',
+      resetOTPInput: false,
+      isKeyboardShow: false,
     };
+  }
 
-    const handleVerifyOTPResponse = () => {
-      if (
-        auth?.isVerifyOTPSuccessful === false &&
-        auth?.isVerifyOTPSuccessful === true
-      ) {
-        const response = auth?.verifyOTPResponse;
-        if (!response.error) {
-          showAlert(response.message, '', '', () => {
-            setState(prevState => ({
-              ...prevState,
-              formStep: 'reset-password',
-              otpErrorMessage: '',
-              token: response.result[0].token,
-            }));
-          });
-        }
+  componentDidMount() {
+    this.keyboardDidShowListener = Keyboard.addListener(
+      'keyboardDidShow',
+      () => {
+        this.setState({isKeyboardShow: true});
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+      },
+    );
+    this.keyboardDidHideListener = Keyboard.addListener(
+      'keyboardDidHide',
+      () => {
+        this.setState({isKeyboardShow: false});
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+      },
+    );
+  }
+
+  componentWillUnmount() {
+    this.keyboardDidShowListener.remove();
+    this.keyboardDidHideListener.remove();
+  }
+
+  componentDidUpdate(prevProps) {
+    const {auth, navigation} = this.props;
+    if (
+      prevProps.auth.isForgotPassSuccessful === false &&
+      auth.isForgotPassSuccessful === true
+    ) {
+      const response = auth.forgotPassResponse;
+      if (!response.error) {
+        showAlert(response.message, '', '', () => {
+          this.setState({formStep: 'verify-otp'});
+        });
       }
-    };
-
-    const handleResetPassResponse = () => {
-      if (
-        auth?.isResetPassSuccessful === false &&
-        auth?.isResetPassSuccessful === true
-      ) {
-        const response = auth?.resetPassResponse;
-        if (!response.error) {
-          showAlert(response.message, '', '', () => {
-            setState(prevState => ({
-              ...prevState,
-              formStep: 'successful-reset',
-            }));
-          });
-        }
-      }
-    };
-
-    handleForgotPassResponse();
-    handleVerifyOTPResponse();
-    handleResetPassResponse();
-  }, [auth]);
-
-  const getOTPHandler = data => {
-    if (!isEmptyObject(data)) {
-      setState(prevState => ({
-        ...prevState,
-        email: data.email,
-      }));
     }
-  };
+    if (
+      prevProps.auth.isVerifyOTPSuccessful === false &&
+      auth.isVerifyOTPSuccessful === true
+    ) {
+      const response = auth.verifyOTPResponse;
+      if (!response.error) {
+        showAlert(response.message, '', '', () => {
+          this.setState({
+            formStep: 'reset-password',
+            otpErrorMessage: '',
+            token: response.result[0].token,
+          });
+        });
+      }
+    }
+    if (
+      prevProps.auth.isResetPassSuccessful === false &&
+      auth.isResetPassSuccessful === true
+    ) {
+      const response = auth.resetPassResponse;
+      if (!response.error) {
+        showAlert(response.message, '', '', () => {
+          this.setState({formStep: 'successful-reset'});
+        });
+      }
+    }
+  }
 
-  const changePinHandler = otp => {
-    setState(prevState => ({
-      ...prevState,
-      OTP: otp,
-    }));
+  getOTPHandler(data) {
+    const {dispatchForgotPassword} = this.props;
+    if (!isEmptyObject(data)) {
+      this.setState({email: data.email});
+      dispatchForgotPassword(data);
+      // this.setState({ formStep: "verify-otp" });
+    }
+  }
+
+  changePinHandler(otp) {
+    const {dispatchVerifyOTP} = this.props;
+    const {email} = this.state;
+
+    this.setState({OTP: otp});
     if (otp.length === 4) {
-      // Keyboard.dismiss();
-      setState(prevState => ({
-        ...prevState,
-        resetOTPInput: true,
-        OTP: '',
-        otpErrorMessage: '',
-      }));
+      Keyboard.dismiss();
+      const body = {
+        email: email,
+        otp: Number(otp),
+      };
+      dispatchVerifyOTP(body);
+      this.setState({resetOTPInput: true, OTP: '', otpErrorMessage: ''});
+      // this.setState({ formStep: "reset-password" });
     }
-  };
+  }
 
-  const resetPasswordHandler = data => {
+  resetPasswordHandler(data) {
+    const {dispatchResetPassword} = this.props;
+    const {email, token} = this.state;
     if (!isEmptyObject(data)) {
-      // Implement your logic here
+      let body = data;
+      body.token = token;
+      body.email = email;
+      dispatchResetPassword(body);
+      // this.setState({ formStep: "successful-reset" });
     }
-  };
+  }
 
-  const backHandler = () => {
+  backHandler = () => {
+    const {navigation} = this.props;
     navigation.pop();
   };
 
-  const logInHandler = () => {
+  logInHandler = () => {
+    const {navigation} = this.props;
     navigation.navigate('Login');
   };
 
-  const {
-    email,
-    otpErrorMessage,
-    OTP,
-    formStep,
-    token,
-    resetOTPInput,
-    isKeyboardShow,
-  } = state;
-
-  return (
-    <LinearGradient style={styles.container} colors={['#E8BC7D', '#E8BC7D']}>
-      {formStep !== 'successful-reset' && (
-        <TouchableOpacity onPress={backHandler} style={styles.backButton}>
-          <Image
-            source={Images.globalScreen.backIconWhite}
-            style={styles.backIcon}
-          />
-        </TouchableOpacity>
-      )}
-      <KeyboardAwareScrollView
-        contentContainerStyle={{flexGrow: isKeyboardShow ? 0.5 : 1}}
-        keyboardShouldPersistTaps="handled">
-        {formStep === 'forgot-password' && (
-          <View style={styles.contentArea}>
+  render() {
+    const {formStep, otpErrorMessage, OTP, resetOTPInput, isKeyboardShow} =
+      this.state;
+    return (
+      <LinearGradient style={styles.container} colors={['#E8BC7D', '#E8BC7D']}>
+        {formStep != 'successful-reset' && (
+          <TouchableOpacity
+            onPress={() => {
+              this.backHandler();
+            }}
+            style={styles.backButton}>
             <Image
-              source={Images.authScreen.lockIcon}
-              style={styles.lockIcon}
+              source={Images.globalScreen.backIconWhite}
+              style={styles.backIcon}
             />
-            <Text style={styles.headerText}>
-              {translate('forgotPasswordScreen.title')}
-            </Text>
-            <Text style={styles.headerSubText}>
-              {translate('forgotPasswordScreen.forgotText')}
-            </Text>
-            <ForgotPasswordForm getOTPHandler={getOTPHandler} />
-          </View>
+          </TouchableOpacity>
         )}
-        {formStep === 'verify-otp' && (
-          <View style={styles.contentArea}>
-            <Image
-              source={Images.authScreen.sendIcon}
-              style={styles.lockIcon}
-            />
-            <Text style={styles.headerText}>
-              {translate('forgotPasswordScreen.verifyOTPHeaderText')}
-            </Text>
-            <Text style={styles.headerSubText}>
-              {translate('forgotPasswordScreen.otpDescription')}
-            </Text>
-            <View style={styles.otpInputs}>
-              <OtpInputs
-                noOfBoxes={4}
-                custominputDigit={styles.custominputDigit}
-                onChangePin={changePinHandler}
-                hideNumber={false}
-                resetOTPInput={resetOTPInput}
+        <KeyboardAwareScrollView
+          contentContainerStyle={{flexGrow: isKeyboardShow ? 0.5 : 1}}
+          keyboardShouldPersistTaps="handled">
+          {formStep === 'forgot-password' && (
+            <View style={styles.contentArea}>
+              <Image
+                source={Images.authScreen.lockIcon}
+                style={styles.lockIcon}
               />
-              {!isEmpty(otpErrorMessage) && (
-                <Text style={styles.otpErrorMessage}>{otpErrorMessage}</Text>
-              )}
+              <Text style={styles.headerText}>
+                {translate('forgotPasswordScreen.title')}
+              </Text>
+              <Text style={styles.headerSubText}>
+                {translate('forgotPasswordScreen.forgotText')}
+              </Text>
+              <ForgotPasswordForm
+                getOTPHandler={data => this.getOTPHandler(data)}
+              />
             </View>
-            <View style={styles.resendTextDiv}>
-              <Text style={styles.resendText}>Didn't receive a code?</Text>
-              <Text style={styles.resend}>Resend</Text>
+          )}
+          {formStep === 'verify-otp' && (
+            <View style={styles.contentArea}>
+              <Image
+                source={Images.authScreen.sendIcon}
+                style={styles.lockIcon}
+              />
+              <Text style={styles.headerText}>
+                {translate('forgotPasswordScreen.verifyOTPHeaderText')}
+              </Text>
+              <Text style={styles.headerSubText}>
+                {translate('forgotPasswordScreen.otpDescription')}
+              </Text>
+              <View style={styles.otpInputs}>
+                <OtpInputs
+                  noOfBoxes={4}
+                  custominputDigit={styles.custominputDigit}
+                  onChangePin={otp => this.changePinHandler(otp)}
+                  hideNumber={false}
+                  resetOTPInput={resetOTPInput}
+                />
+                {!isEmpty(otpErrorMessage) && (
+                  <Text style={styles.otpErrorMessage}>{otpErrorMessage}</Text>
+                )}
+              </View>
+              <View style={styles.resendTextDiv}>
+                <Text style={styles.resendText}>Didn't receive a code?</Text>
+                <Text style={styles.resend}>Resend</Text>
+              </View>
+              <ButtonComponent
+                buttonClicked={() => {
+                  if (OTP.length !== 4) {
+                    this.setState({
+                      otpErrorMessage: translate(
+                        'forgotPasswordScreen.otpErrorMessage',
+                      ),
+                    });
+                    return;
+                  }
+                  this.changePinHandler(OTP);
+                }}
+                style={styles.buttonContainer}
+                buttonStyle={styles.buttonStyle}
+                buttonText={translate('forgotPasswordScreen.otpButton')}
+              />
             </View>
-            <ButtonComponent
-              buttonClicked={() => {
-                if (OTP.length !== 4) {
-                  setState(prevState => ({
-                    ...prevState,
-                    otpErrorMessage: translate(
-                      'forgotPasswordScreen.otpErrorMessage',
-                    ),
-                  }));
-                  return;
-                }
-                changePinHandler(OTP);
-              }}
-              style={styles.buttonContainer}
-              buttonStyle={styles.buttonStyle}
-              buttonText={translate('forgotPasswordScreen.otpButton')}
-            />
-          </View>
-        )}
-        {formStep === 'reset-password' && (
-          <View style={styles.contentArea}>
-            <Image
-              source={Images.authScreen.resetIcon}
-              style={styles.lockIcon}
-            />
-            <Text style={styles.ResetPasswordheaderText}>
-              {translate('forgotPasswordScreen.resetPasswordHeaderText')}
-            </Text>
-            <ResetPassword resetPasswordHandler={resetPasswordHandler} />
-          </View>
-        )}
-        {formStep === 'successful-reset' && (
-          <View style={styles.contentArea}>
-            <Image
-              source={Images.authScreen.successIcon}
-              style={styles.lockIcon}
-            />
-            <Text style={styles.headerText}>Success!</Text>
-            <Text style={styles.headerSubText}>
-              Your password has been reset succesfully. You can now login with
-              your new password.
-            </Text>
-            <ButtonComponent
-              buttonClicked={logInHandler}
-              style={styles.buttonContainer}
-              buttonStyle={styles.buttonStyle}
-              buttonText="Login"
-            />
-          </View>
-        )}
-      </KeyboardAwareScrollView>
-    </LinearGradient>
-  );
-};
+          )}
+          {formStep === 'reset-password' && (
+            <View style={styles.contentArea}>
+              <Image
+                source={Images.authScreen.resetIcon}
+                style={styles.lockIcon}
+              />
+              <Text style={styles.ResetPasswordheaderText}>
+                {translate('forgotPasswordScreen.resetPasswordHeaderText')}
+              </Text>
+              <ResetPassword
+                resetPasswordHandler={data => this.resetPasswordHandler(data)}
+              />
+            </View>
+          )}
+          {formStep === 'successful-reset' && (
+            <View style={styles.contentArea}>
+              <Image
+                source={Images.authScreen.successIcon}
+                style={styles.lockIcon}
+              />
+              <Text style={styles.headerText}>Success!</Text>
+              <Text style={styles.headerSubText}>
+                Your password has been reset succesfully. You can now login with
+                your new password.
+              </Text>
+              <ButtonComponent
+                buttonClicked={() => {
+                  this.logInHandler();
+                }}
+                style={styles.buttonContainer}
+                buttonStyle={styles.buttonStyle}
+                buttonText="Login"
+              />
+            </View>
+          )}
+        </KeyboardAwareScrollView>
+      </LinearGradient>
+    );
+  }
+}
 
 const mapStateToProps = state => ({
-  auth: state.authReducer,
+  auth: state.auth,
 });
 
-// export default connect(mapStateToProps)(ForgotPasswordScreen);
-export default ForgotPasswordScreen;
+const mapDispatchToProps = {
+  //   dispatchForgotPassword: data => authActions.handleForgotPassword(data),
+  //   dispatchVerifyOTP: data => authActions.handleVerifyOTP(data),
+  //   dispatchResetPassword: data => authActions.handleResetPassword(data),
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(ForgotPasswordScreen);

@@ -3,10 +3,10 @@ import {connect} from 'react-redux';
 import {
   View,
   Text,
+  ScrollView,
   Image,
   TouchableOpacity,
   Keyboard,
-  ScrollView,
 } from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
@@ -25,6 +25,8 @@ import Moment from 'moment';
 import styles from './styles';
 import moment from 'moment';
 import ImageResizer from '@bam.tech/react-native-image-resizer';
+import {resetAuthState} from '../../store/slices/authSlice';
+import {createProfile} from '../../store/slices/createBabySlice';
 
 class AddProfileScreen extends React.Component {
   constructor(props) {
@@ -71,9 +73,8 @@ class AddProfileScreen extends React.Component {
   }
 
   logOutHandler() {
-    console.log('logout clicked!');
-    // const {dispatchResetAuthState} = this.props;
-    // dispatchResetAuthState();
+    const {dispatchResetAuthState} = this.props;
+    dispatchResetAuthState();
   }
 
   cancelbuttonClicked() {
@@ -91,10 +92,7 @@ class AddProfileScreen extends React.Component {
       selectedLBWeight,
       selectedOZWeight,
     } = this.state;
-    const {
-      // dispatchCreateProfile,
-      navigation,
-    } = this.props;
+    const {dispatchCreateProfile, navigation} = this.props;
 
     if (!nameValue) {
       return;
@@ -124,7 +122,7 @@ class AddProfileScreen extends React.Component {
     data.append('weight_oz', selectedOZWeight);
 
     // return;
-    // dispatchCreateProfile(data, navigation);
+    dispatchCreateProfile(data, navigation);
   }
 
   showDatePicker() {
@@ -463,14 +461,12 @@ class AddProfileScreen extends React.Component {
   }
 }
 const mapStateToProps = state => ({
-  babyDetails: state.createBabyReducer,
+  babyDetails: state.createBaby,
 });
 
-// const mapDispatchToProps = {
-//   dispatchResetAuthState: () => authActions.resetAuthState(),
-//   dispatchCreateProfile: (data, navigation) =>
-//     createBabyAction.CreateProfiles(data, navigation),
-// };
+const mapDispatchToProps = {
+  dispatchResetAuthState: () => resetAuthState(),
+  dispatchCreateProfile: (data, navigation) => createProfile(data, navigation),
+};
 
-// export default connect(mapStateToProps, mapDispatchToProps)(AddProfileScreen);
-export default AddProfileScreen;
+export default connect(mapStateToProps, mapDispatchToProps)(AddProfileScreen);

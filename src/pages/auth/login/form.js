@@ -20,9 +20,56 @@ class LoginForm extends React.Component {
     };
   }
 
+  isValid = () => {
+    // let { t } = this.props;
+    const {email, password} = this.state;
+    const reg =
+      /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+    if (isEmpty(email) || isEmpty(password)) {
+      return false;
+    }
+
+    this.setState({
+      emailErrorMessage: '',
+      passwordErrorMessage: '',
+      validateInput: false,
+      isEmailInvalid: false,
+      isPasswordInvalid: false,
+    });
+
+    /* EMAIL VALIDATION */
+    if (reg.test(email) === false) {
+      this.setState({
+        emailErrorMessage: translate('formErrorMessage.emailErrorMessage'),
+        isEmailInvalid: true,
+      });
+      return false;
+    }
+
+    /* PASSWORD VALIDATION */
+    if (password.length < 4) {
+      this.setState({
+        passwordErrorMessage: translate(
+          'formErrorMessage.passwordErrorMessage',
+        ),
+        isPasswordInvalid: true,
+      });
+      return false;
+    }
+    return true;
+  };
+
   onSubmit = () => {
     const {submitForm} = this.props;
     const {email, password} = this.state;
+
+    /* REQUIRED FIELDS VALIDATION */
+    if (this.isValid() === false) {
+      this.setState({validateInput: true});
+      return true;
+    }
+
     const data = {
       email: email,
       password: password,

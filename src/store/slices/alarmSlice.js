@@ -52,7 +52,7 @@ const alarmSlice = createSlice({
       state.isAdded = false;
     },
   },
-  extraReducers: builder => {
+  extras: builder => {
     builder
       .addCase(setAlarmAPI.pending, state => {
         state.loading = true;
@@ -74,7 +74,6 @@ const alarmSlice = createSlice({
       });
   },
 });
-
 export const {setAlarm, resetAlarmMsg} = alarmSlice.actions;
 
 export default alarmSlice.reducer;

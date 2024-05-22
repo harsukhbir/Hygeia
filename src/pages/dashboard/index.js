@@ -1,4 +1,5 @@
 import React from 'react';
+import {connect} from 'react-redux';
 import {
   View,
   Text,
@@ -13,6 +14,9 @@ import {Images} from '../../../src/assets/images';
 import {isEmptyObject} from '../../../src/utils/native';
 import moment from 'moment';
 import styles from './styles';
+import messaging from '@react-native-firebase/messaging';
+import {resetAuthState} from '../../store/slices/authSlice';
+import {getActiveBaby, getActiveScreen} from '../../store/selectors';
 
 class dashboardScreen extends React.Component {
   constructor(props) {
@@ -23,10 +27,35 @@ class dashboardScreen extends React.Component {
     };
   }
 
+  componentDidMount() {
+    const {dispatchDashboardListing, activeBaby} = this.props;
+
+    if (!isEmptyObject(activeBaby)) {
+      const data = {
+        babyprofile_id: activeBaby.id,
+        date: moment().format('YYYY-MM-DD'),
+      };
+      dispatchDashboardListing(data);
+    } else {
+    }
+
+    this.getLeftBreastValue();
+
+    messaging()
+      .getToken()
+      .then(token => {
+        // updateDeviceToken();
+      });
+
+    messaging().onTokenRefresh(token => {
+      //   updateDeviceToken();
+    });
+  }
+
   componentDidUpdate(prevProps) {
     const {
       activeBaby,
-      // dispatchDashboardListing,
+      dispatchDashboardListing,
       activeScreen,
       navigation,
       dashboard,
@@ -49,11 +78,11 @@ class dashboardScreen extends React.Component {
       activeBaby &&
       prevProps.activeBaby.id !== activeBaby.id
     ) {
-      // const data = {
-      //   babyprofile_id: activeBaby.id,
-      //   date: moment().format('YYYY-MM-DD'),
-      // };
-      // dispatchDashboardListing(data);
+      const data = {
+        babyprofile_id: activeBaby.id,
+        date: moment().format('YYYY-MM-DD'),
+      };
+      dispatchDashboardListing(data);
     }
     if (
       activeScreen !== null &&
@@ -62,18 +91,19 @@ class dashboardScreen extends React.Component {
       prevProps.activeScreen !== 'Dashboard'
     ) {
       if (!isEmptyObject(activeBaby)) {
-        console.log('active baby: ', activeBaby);
+        const data = {
+          babyprofile_id: activeBaby.id,
+          date: moment().format('YYYY-MM-DD'),
+        };
+        dispatchDashboardListing(data);
       }
     }
     if (
-      prevProps.dashboard?.DashboardListingSuccessful == false &&
-      dashboard?.DashboardListingSuccessful == true
+      prevProps.dashboard.DashboardListingSuccessful == false &&
+      dashboard.DashboardListingSuccessful == true
     ) {
       this.getLeftBreastValue();
     }
-    // if (prevProps.count !== this.props.count) {
-    //   console.log('Count changed:', this.props.count);
-    // }
   }
 
   getSecondTime = time => {
@@ -86,13 +116,13 @@ class dashboardScreen extends React.Component {
 
     if (
       dashboard &&
-      dashboard?.dashboardListing?.result &&
-      dashboard?.dashboardListing?.result?.breastfeeds
+      dashboard.dashboardListing.result &&
+      dashboard.dashboardListing.result.breastfeeds
     ) {
       const leftBreast =
-        dashboard?.dashboardListing?.result?.breastfeeds?.left_breast;
+        dashboard.dashboardListing.result.breastfeeds.left_breast;
       const totalTime =
-        dashboard?.dashboardListing?.result?.breastfeeds?.total_time;
+        dashboard.dashboardListing.result.breastfeeds.total_time;
 
       const leftValue = (
         (this.getSecondTime(leftBreast) / this.getSecondTime(totalTime)) *
@@ -109,7 +139,8 @@ class dashboardScreen extends React.Component {
   }
 
   logOutHandler() {
-    console.log('logout clicked!');
+    const {dispatchResetAuthState} = this.props;
+    dispatchResetAuthState();
   }
 
   convertTime(data) {
@@ -139,7 +170,7 @@ class dashboardScreen extends React.Component {
   render() {
     const {dashboard} = this.props;
     const {leftBreastPercentage, isNoBabyModal} = this.state;
-    let dashboardData = dashboard?.dashboardListing?.result;
+    let dashboardData = dashboard.dashboardListing.result;
 
     return (
       <ScrollView>
@@ -188,7 +219,7 @@ class dashboardScreen extends React.Component {
             <View style={styles.dashboardboxHeader}>
               <View>
                 <Image
-                  source={Images.dashboard?.pumpingIcon}
+                  source={Images.dashboard.pumpingIcon}
                   style={styles.dashboardboxImage}
                 />
               </View>
@@ -196,7 +227,6 @@ class dashboardScreen extends React.Component {
                 <Text style={styles.dashboardboxTitle}>
                   {translate('dashboardScreen.pumpingTitle')}
                 </Text>
-
                 {dashboardData && dashboardData.pump_session_count > 0 ? (
                   <Text style={styles.dashboardboxsessionText}>
                     {dashboardData.pump_session_count} sessions
@@ -249,7 +279,7 @@ class dashboardScreen extends React.Component {
             <View style={styles.dashboardboxHeader}>
               <View>
                 <Image
-                  source={Images.dashboard?.breastfeedingIcon}
+                  source={Images.dashboard.breastfeedingIcon}
                   style={styles.dashboardboxImage}
                 />
               </View>
@@ -269,22 +299,20 @@ class dashboardScreen extends React.Component {
             </View>
             {dashboardData && dashboardData.breastfeeds ? (
               <View>
-                {this.hasValue(dashboardData.breastfeeds?.left_breast) &&
-                this.hasValue(dashboardData.breastfeeds?.right_breast) ? (
+                {this.hasValue(dashboardData.breastfeeds.left_breast) &&
+                this.hasValue(dashboardData.breastfeeds.right_breast) ? (
                   <View style={styles.listing}>
                     <Text style={styles.listBreastsIcon}>B</Text>
                     <View style={styles.mainlistText}>
                       <Text style={styles.listTextBold}>Both Breasts, </Text>
                       <Text style={styles.listText}>
-                        {this.getTimeAMPM(
-                          dashboardData.breastfeeds?.start_time,
-                        )}
+                        {this.getTimeAMPM(dashboardData.breastfeeds.start_time)}
                       </Text>
                     </View>
                   </View>
                 ) : (
                   <View>
-                    {this.hasValue(dashboardData.breastfeeds?.left_breast) ? (
+                    {this.hasValue(dashboardData.breastfeeds.left_breast) ? (
                       <View style={styles.listing}>
                         <Text style={styles.listBreastsIcon}>R</Text>
                         <View style={styles.mainlistText}>
@@ -293,20 +321,20 @@ class dashboardScreen extends React.Component {
                           </Text>
                           <Text style={styles.listText}>
                             {this.getTimeAMPM(
-                              dashboardData.breastfeeds?.start_time,
+                              dashboardData.breastfeeds.start_time,
                             )}
                           </Text>
                         </View>
                       </View>
                     ) : null}
-                    {this.hasValue(dashboardData.breastfeeds?.right_breast) ? (
+                    {this.hasValue(dashboardData.breastfeeds.right_breast) ? (
                       <View style={styles.listing}>
                         <Text style={styles.listBreastsIcon}>L</Text>
                         <View style={styles.mainlistText}>
                           <Text style={styles.listTextBold}>Left Breast, </Text>
                           <Text style={styles.listText}>
                             {this.getTimeAMPM(
-                              dashboardData.breastfeeds?.start_time,
+                              dashboardData.breastfeeds.start_time,
                             )}
                           </Text>
                         </View>
@@ -336,17 +364,17 @@ class dashboardScreen extends React.Component {
                   <View style={styles.linechartMiter}>
                     <Text style={styles.linecharttextMiter}>
                       {this.convertDataIntoHM(
-                        dashboardData.breastfeeds?.left_breast,
+                        dashboardData.breastfeeds.left_breast,
                       )}
                     </Text>
                     <Text style={styles.linecharttextboldMiter}>
                       {this.convertDataIntoHM(
-                        dashboardData.breastfeeds?.total_time,
+                        dashboardData.breastfeeds.total_time,
                       )}
                     </Text>
                     <Text style={styles.linecharttextMiter}>
                       {this.convertDataIntoHM(
-                        dashboardData.breastfeeds?.right_breast,
+                        dashboardData.breastfeeds.right_breast,
                       )}
                     </Text>
                   </View>
@@ -360,7 +388,7 @@ class dashboardScreen extends React.Component {
             <View style={styles.dashboardboxHeader}>
               <View>
                 <Image
-                  source={Images.dashboard?.diaperingIcon}
+                  source={Images.dashboard.diaperingIcon}
                   style={styles.dashboardboxImage}
                 />
               </View>
@@ -381,7 +409,7 @@ class dashboardScreen extends React.Component {
                   <View style={styles.listing}>
                     <View>
                       <Image
-                        source={Images.dashboard?.peeIcon}
+                        source={Images.dashboard.peeIcon}
                         style={styles.listIcon}
                       />
                     </View>
@@ -400,7 +428,7 @@ class dashboardScreen extends React.Component {
                   <View style={styles.listing}>
                     <View>
                       <Image
-                        source={Images.dashboard?.poopIcon}
+                        source={Images.dashboard.poopIcon}
                         style={styles.listIcon}
                       />
                     </View>
@@ -419,7 +447,7 @@ class dashboardScreen extends React.Component {
                   <View style={styles.listing}>
                     <View>
                       <Image
-                        source={Images.dashboard?.bothIcon}
+                        source={Images.dashboard.bothIcon}
                         style={styles.listIcon}
                       />
                     </View>
@@ -442,7 +470,7 @@ class dashboardScreen extends React.Component {
             <View style={styles.dashboardboxHeader}>
               <View>
                 <Image
-                  source={Images.dashboard?.feedingIcon}
+                  source={Images.dashboard.feedingIcon}
                   style={styles.dashboardboxImage}
                 />
               </View>
@@ -461,7 +489,7 @@ class dashboardScreen extends React.Component {
                   <View style={styles.listing}>
                     <View>
                       <Image
-                        source={Images.dashboard?.breastfedIcon}
+                        source={Images.dashboard.breastfedIcon}
                         style={styles.listIcon}
                       />
                     </View>
@@ -491,7 +519,7 @@ class dashboardScreen extends React.Component {
                   <View style={styles.listing}>
                     <View>
                       <Image
-                        source={Images.dashboard?.bottlefedIcon}
+                        source={Images.dashboard.bottlefedIcon}
                         style={styles.listIcon}
                       />
                     </View>
@@ -526,5 +554,17 @@ class dashboardScreen extends React.Component {
   }
 }
 
-// export default connect(mapStateToProps)(dashboardScreen);
-export default dashboardScreen;
+const mapStateToProps = state => ({
+  dashboard: state.dashboard,
+  activeBaby: getActiveBaby(state),
+  activeScreen: getActiveScreen(state),
+  user: state.user,
+  tab: state.tab,
+});
+
+const mapDispatchToProps = {
+  //   dispatchDashboardListing: data => handleDashboard(data),
+  dispatchResetAuthState: () => resetAuthState(),
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(dashboardScreen);

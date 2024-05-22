@@ -37,7 +37,7 @@ const dashboardSlice = createSlice({
       state = initialState;
     },
   },
-  extraReducers: builder => {
+  extras: builder => {
     builder
       .addCase(fetchDashboardData.pending, state => {
         state.DashboardListingSuccessful = false;

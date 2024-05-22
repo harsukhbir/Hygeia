@@ -9,16 +9,15 @@ import styles from './styles';
 
 class GetStartedScreen extends React.Component {
   submitForm(values) {
-    // const {dispatchGetStarted, dispatchCreateProfile} = this.props;
+    const {dispatchGetStarted, dispatchCreateProfile} = this.props;
     if (!isEmptyObject(values)) {
-      // dispatchCreateProfile(values);
+      dispatchCreateProfile(values);
     }
   }
 
   skipNowScreen() {
-    console.log('skip clicked!');
-    // const {dispatchGetStarted} = this.props;
-    // dispatchGetStarted(true);
+    const {dispatchGetStarted} = this.props;
+    dispatchGetStarted(true);
   }
 
   render() {
@@ -48,13 +47,12 @@ class GetStartedScreen extends React.Component {
 }
 
 const mapStateToProps = state => ({
-  auth: state.authReducer,
+  auth: state.auth,
 });
 
-// const mapDispatchToProps = {
-//   dispatchGetStarted: data => authActions.getStartedSuccess(data),
-//   dispatchCreateProfile: data => userAction.CreateProfiles(data),
-// };
+const mapDispatchToProps = {
+  //   dispatchGetStarted: data => authActions.getStartedSuccess(data),
+  //   dispatchCreateProfile: data => userAction.CreateProfiles(data),
+};
 
-// export default connect(mapStateToProps, mapDispatchToProps)(GetStartedScreen);
-export default GetStartedScreen;
+export default connect(mapStateToProps, mapDispatchToProps)(GetStartedScreen);

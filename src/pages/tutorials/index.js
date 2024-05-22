@@ -1,10 +1,12 @@
 import React from 'react';
+import {connect} from 'react-redux';
 import {View, Text, Image, ScrollView} from 'react-native';
 import LanguageSwitcher from '../../../src/components/LanguageSwitcher';
 import HeaderComponent from '../../../src/components/HeaderComponent';
 import {Images} from '../../../src/assets/images';
 import {translate} from '../../../src/locales/i18n';
 import styles from './styles';
+import {resetAuthState} from '../../store/slices/authSlice';
 
 class TutorialsScreen extends React.Component {
   static navigationOptions = ({navigation, screenProps: {i18n, insets}}) => {
@@ -20,9 +22,8 @@ class TutorialsScreen extends React.Component {
   componentDidMount() {}
 
   logOutHandler() {
-    console.log('logout clicked');
-    // const {dispatchResetAuthState} = this.props;
-    // dispatchResetAuthState();
+    const {dispatchResetAuthState} = this.props;
+    dispatchResetAuthState();
   }
 
   render() {
@@ -83,9 +84,8 @@ class TutorialsScreen extends React.Component {
   }
 }
 
-// const mapDispatchToProps = {
-//   dispatchResetAuthState: () => authActions.resetAuthState(),
-// };
+const mapDispatchToProps = {
+  dispatchResetAuthState: () => resetAuthState(),
+};
 
-// export default connect(null, mapDispatchToProps)(TutorialsScreen);
-export default TutorialsScreen;
+export default connect(null, mapDispatchToProps)(TutorialsScreen);

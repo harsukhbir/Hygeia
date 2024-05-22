@@ -1,10 +1,12 @@
 import React from 'react';
+import {connect} from 'react-redux';
 import {View, Text, ScrollView, Linking, Keyboard} from 'react-native';
 import TextInput from '../../../src/components/TextInput';
 import {translate} from '../../../src/locales/i18n';
 import ButtonComponent from '../../../src/components/ButtonComponent';
 import {isEmpty, showAlert} from '../../../src/utils/native';
 import styles from './styles';
+import {handleProductForm} from '../../store/slices/contactFormSlice';
 
 class ProductSupportScreen extends React.Component {
   constructor(props) {
@@ -89,10 +91,10 @@ class ProductSupportScreen extends React.Component {
       phone_no: phonenumber,
       message: message,
     };
-    //   const {dispatchProductSupportContactForm} = this.props;
-    //   if (this.isValid() === true) {
-    //     dispatchProductSupportContactForm(userData);
-    //   }
+    const {dispatchProductSupportContactForm} = this.props;
+    if (this.isValid() === true) {
+      dispatchProductSupportContactForm(userData);
+    }
   }
 
   render() {
@@ -236,17 +238,14 @@ class ProductSupportScreen extends React.Component {
 }
 
 const mapStateToProps = state => ({
-  contactForm: state.contactFormReducer,
+  contactForm: state.contactForm,
 });
 
-// const mapDispatchToProps = {
-//   dispatchProductSupportContactForm: data =>
-//     contactFormActions.handleProductForm(data),
-// };
+const mapDispatchToProps = {
+  dispatchProductSupportContactForm: data => handleProductForm(data),
+};
 
-// export default connect(
-//   mapStateToProps,
-//   mapDispatchToProps,
-// )(ProductSupportScreen);
-
-export default ProductSupportScreen;
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(ProductSupportScreen);

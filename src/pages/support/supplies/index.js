@@ -1,8 +1,10 @@
 import React from 'react';
+import {connect} from 'react-redux';
 import {View, Text} from 'react-native';
 import LanguageSwitcher from '../../../../src/components/LanguageSwitcher';
 import {translate} from '../../../../src/locales/i18n';
 import styles from './styles';
+import {resetAuthState} from '../../../store/slices/authSlice';
 
 class SuppliesScreen extends React.Component {
   static navigationOptions = ({navigation, screenProps: {i18n, insets}}) => {
@@ -25,9 +27,8 @@ class SuppliesScreen extends React.Component {
   }
 }
 
-// const mapDispatchToProps = {
-//   dispatchResetAuthState: () => authActions.resetAuthState(),
-// };
+const mapDispatchToProps = {
+  dispatchResetAuthState: () => resetAuthState(),
+};
 
-// export default connect(null, mapDispatchToProps)(SuppliesScreen);
-export default SuppliesScreen;
+export default connect(null, mapDispatchToProps)(SuppliesScreen);

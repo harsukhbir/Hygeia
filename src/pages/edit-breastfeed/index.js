@@ -1,6 +1,6 @@
 import React from 'react';
 import {connect} from 'react-redux';
-import {StackActions, NavigationActions} from '@react-navigation/native';
+import {StackActions, NavigationActions} from 'react-navigation';
 import {
   View,
   Text,
@@ -20,6 +20,11 @@ import TimePicker from 'react-native-24h-timepicker';
 import moment from 'moment';
 import styles from './styles';
 import CustomTimePicker from '../../components/CustomTimePicker';
+import {resetAuthState} from '../../store/slices/authSlice';
+import {
+  clearMsg,
+  handleBreastfeedEdit,
+} from '../../store/slices/breastfeedSlice';
 
 class AddBreastfeedEntry extends React.Component {
   constructor(props) {
@@ -83,11 +88,11 @@ class AddBreastfeedEntry extends React.Component {
   componentDidUpdate() {
     const {
       card: {msg},
-      // dispatchClearCard,
+      dispatchClearCard,
       navigation,
     } = this.props;
     if (msg === 'EDIT_BREASTFEED_SUCCESS') {
-      // dispatchClearCard();
+      dispatchClearCard();
       this.setState(() => {
         showAlert('Success', 'baby breastfeed update successfully.', '', () => {
           const resetAction = StackActions.reset({
@@ -355,7 +360,7 @@ class AddBreastfeedEntry extends React.Component {
 
     const {dispatchBreastfeedEdit} = this.props;
     if (!isEmptyObject(data)) {
-      // dispatchBreastfeedEdit(data);
+      dispatchBreastfeedEdit(data);
     }
   }
 
@@ -702,14 +707,13 @@ class AddBreastfeedEntry extends React.Component {
 }
 
 const mapStateToProps = state => ({
-  card: state.breastfeedReducer,
+  card: state.breastfeed,
 });
 
-// const mapDispatchToProps = {
-//   dispatchBreastfeedEdit: data => breastfeedActions.handleBreastfeedEdit(data),
-//   dispatchResetAuthState: () => authActions.resetAuthState(),
-//   dispatchClearCard: () => breastfeedActions.clearMsg(),
-// };
+const mapDispatchToProps = {
+  dispatchBreastfeedEdit: data => handleBreastfeedEdit(data),
+  dispatchResetAuthState: () => resetAuthState(),
+  dispatchClearCard: () => clearMsg(),
+};
 
-// export default connect(mapStateToProps, mapDispatchToProps)(AddBreastfeedEntry);
-export default AddBreastfeedEntry;
+export default connect(mapStateToProps, mapDispatchToProps)(AddBreastfeedEntry);

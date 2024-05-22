@@ -1,10 +1,12 @@
 import React from 'react';
+import {connect} from 'react-redux';
 import {View, Text, Image} from 'react-native';
 import LanguageSwitcher from '../../../../src/components/LanguageSwitcher';
 import ButtonComponent from '../../../../src/components/ButtonComponent';
 import {Images} from '../../../../src/assets/images';
 import {translate} from '../../../../src/locales/i18n';
 import styles from './styles';
+import {resetAuthState} from '../../../store/slices/authSlice';
 
 class BreastpumpsScreen extends React.Component {
   static navigationOptions = ({navigation, screenProps: {i18n, insets}}) => {
@@ -48,9 +50,8 @@ class BreastpumpsScreen extends React.Component {
   }
 }
 
-// const mapDispatchToProps = {
-//   dispatchResetAuthState: () => authActions.resetAuthState(),
-// };
+const mapDispatchToProps = {
+  dispatchResetAuthState: () => resetAuthState(),
+};
 
-// export default connect(null, mapDispatchToProps)(BreastpumpsScreen);
-export default BreastpumpsScreen;
+export default connect(null, mapDispatchToProps)(BreastpumpsScreen);

@@ -35,7 +35,7 @@ const statisticsSlice = createSlice({
   reducers: {
     STATISTICS_RESET: () => initialState,
   },
-  extraReducers: builder => {
+  extras: builder => {
     builder
       .addCase(getStatisticsList.pending, state => {
         state.isFetching = true;

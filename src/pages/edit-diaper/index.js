@@ -1,4 +1,5 @@
 import React from 'react';
+import {connect} from 'react-redux';
 import {
   View,
   Text,
@@ -11,11 +12,13 @@ import RNPickerSelect from 'react-native-picker-select';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import TextInput from '../../../src/components/TextInput';
 import ButtonComponent from '../../../src/components/ButtonComponent';
-import {showAlert} from '../../../src/utils/native';
+import {isEmptyObject, showAlert} from '../../../src/utils/native';
 import TimePicker from 'react-native-24h-timepicker';
 import moment from 'moment';
 import styles from './styles';
 import CustomTimePicker from '../../components/CustomTimePicker';
+import {CLEAR_MSG, handleDiaperEdit} from '../../store/slices/diaperSlice';
+import {resetAuthState} from '../../store/slices/authSlice';
 
 class EditDiaper extends React.Component {
   constructor(props) {
@@ -35,11 +38,11 @@ class EditDiaper extends React.Component {
   componentDidUpdate() {
     const {
       card: {msg},
-      // dispatchClearCard,
+      dispatchClearCard,
       navigation,
     } = this.props;
     if (msg === 'EDIT_DIAPER_SUCCESS') {
-      // dispatchClearCard();
+      dispatchClearCard();
       this.setState(() => {
         showAlert('Success', 'baby diaper update successfully.', '', () => {
           navigation.navigate('Track', {activeTab: 'Diapers'});
@@ -94,10 +97,10 @@ class EditDiaper extends React.Component {
       type_of_diaper: selectedFeed,
       note: NotesValue,
     };
-    // const {dispatchDiaperEdit} = this.props;
-    // if (!isEmptyObject(data)) {
-    //   dispatchDiaperEdit(data);
-    // }
+    const {dispatchDiaperEdit} = this.props;
+    if (!isEmptyObject(data)) {
+      dispatchDiaperEdit(data);
+    }
   }
 
   getTimeAMPM(data) {
@@ -249,14 +252,13 @@ class EditDiaper extends React.Component {
 }
 
 const mapStateToProps = state => ({
-  card: state.diaperReducer,
+  card: state.diaper,
 });
 
-// const mapDispatchToProps = {
-//   dispatchDiaperEdit: data => diaperActions.handleDiaperEdit(data),
-//   dispatchClearCard: () => diaperActions.clearMsg(),
-//   dispatchResetAuthState: () => authActions.resetAuthState(),
-// };
+const mapDispatchToProps = {
+  dispatchDiaperEdit: data => handleDiaperEdit(data),
+  dispatchClearCard: () => CLEAR_MSG(),
+  dispatchResetAuthState: () => resetAuthState(),
+};
 
-// export default connect(mapStateToProps, mapDispatchToProps)(EditDiaper);
-export default EditDiaper;
+export default connect(mapStateToProps, mapDispatchToProps)(EditDiaper);

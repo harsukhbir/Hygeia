@@ -1,4 +1,5 @@
 import React from 'react';
+import {connect} from 'react-redux';
 import {
   View,
   Text,
@@ -17,10 +18,18 @@ import {
   MenuTrigger,
 } from 'react-native-popup-menu';
 import moment from 'moment';
-// ! fix the foucused
-// import {withNavigationFocus} from '@react-navigation/native';
+import {withNavigationFocus} from 'react-navigation';
 import styles from '../styles';
 import SetAlarmComponent from '../components/SetAlarmComponent';
+import {
+  editGetDataBottle,
+  handleBottleDelete,
+  handleBottleListing,
+} from '../../../store/slices/bottleSlice';
+import {resetAuthState} from '../../../store/slices/authSlice';
+import {setRefreshData} from '../../../store/slices/commonSlice';
+import {getActiveBaby} from '../../../store/selectors';
+import {fetchPrevAlarmValue} from '../../../store/slices/trackSlice';
 
 class BottlesCards extends React.Component {
   constructor(props) {
@@ -41,70 +50,68 @@ class BottlesCards extends React.Component {
   componentDidUpdate(prevProps) {
     const {currentDate, activeBaby} = this.props;
     if (
-      currentDate !== prevProps?.currentDate ||
-      (prevProps?.activeBaby &&
+      currentDate !== prevProps.currentDate ||
+      (prevProps.activeBaby &&
         activeBaby &&
-        prevProps?.activeBaby.id !== activeBaby.id)
+        prevProps.activeBaby.id !== activeBaby.id)
     ) {
       this.bottleFunction(currentDate, activeBaby);
       // this.fetchAlarmValue(activeBaby);
     }
 
     if (
-      prevProps?.tabReducer.activeTab !== this.props?.tabReducer.activeTab &&
+      prevProps.tab.activeTab !== this.props.tab.activeTab &&
       activeBaby &&
       activeBaby.id
     ) {
-      if (this.props?.tabReducer.activeTab === 'Track') {
+      if (this.props.tab.activeTab === 'Track') {
         this.fetchAlarmValue(activeBaby);
       }
     }
-    // if(prevProps?.tabReducer.activeT)
 
     if (
-      prevProps?.tabReducer.trackActiveTab !==
-        this.props?.tabReducer.trackActiveTab &&
+      prevProps.tab.trackActiveTab !== this.props.tab.trackActiveTab &&
       activeBaby &&
       activeBaby.id
     ) {
-      if (this.props?.tabReducer.trackActiveTab === 'Bottles') {
+      if (this.props.tab.trackActiveTab === 'Bottles') {
         /// FETCH ALARA HERE
         this.fetchAlarmValue(activeBaby);
       }
     }
 
-    if (this.props?.refreshData) {
+    if (this.props.refreshData) {
       this.bottleFunction(currentDate, activeBaby);
-      // this.props?.dispatchRefresh(false);
+      this.props.dispatchRefresh(false);
     }
   }
 
   fetchAlarmValue(activeBaby) {
-    // const {dispatchGetAlarm} = this.props;
+    const {dispatchGetAlarm} = this.props;
     if (activeBaby) {
       const data = {
         baby_id: activeBaby.id,
         type: 'bottle',
       };
-      // dispatchGetAlarm(data);
+      dispatchGetAlarm(data);
     }
   }
 
   bottleFunction(currentDate, activeBaby) {
-    // const {dispatchBottleListing} = this.props;
+    const {dispatchBottleListing} = this.props;
     if (activeBaby) {
       const data = {
         babyprofile_id: activeBaby.id,
         date: currentDate,
       };
-      // dispatchBottleListing(data);
+      dispatchBottleListing(data);
     }
   }
 
   redirectToAddEntry() {
     const {navigation} = this.props;
 
-    navigation.navigate('AddBottle', {date: this.props?.currentDate});
+    navigation.navigate('AddBottle', {date: this.props.currentDate});
   }
 
   HandleViewNotes(data) {
@@ -115,24 +122,18 @@ class BottlesCards extends React.Component {
     const data = {
       bottle_id: key,
     };
-    const {
-      // dispatchBottleDelete,
-      navigation,
-    } = this.props;
+    const {dispatchBottleDelete, navigation} = this.props;
     if (!isEmptyObject(data)) {
-      // dispatchBottleDelete(data);
+      dispatchBottleDelete(data);
       this.setState({opened: false});
       navigation.setParams({activeTab: 'Bottles'});
     }
   }
 
   HandleEditBottle(data) {
-    const {
-      navigation,
-      // dispatchEditBottle
-    } = this.props;
+    const {navigation, dispatchEditBottle} = this.props;
     if (!isEmptyObject(data)) {
-      // dispatchEditBottle(data);
+      dispatchEditBottle(data);
     }
     this.setState({
       opened: false,
@@ -155,7 +156,7 @@ class BottlesCards extends React.Component {
   render() {
     const {bottle, isFocused, track} = this.props;
     const {ViewNoteModal, isAlarmModal} = this.state;
-    const alarm = track?.bottle || [];
+    const alarm = track.bottle || [];
 
     return (
       <View style={styles.trackContainer}>
@@ -182,8 +183,8 @@ class BottlesCards extends React.Component {
             </View>
             <Text style={styles.sessionsTitle}>
               {bottle &&
-                bottle?.bottleListing?.result &&
-                bottle?.bottleListing?.result?.length}{' '}
+                bottle.bottleListing.result &&
+                bottle.bottleListing.result.length}{' '}
               Sessions
             </Text>
           </View>
@@ -202,13 +203,13 @@ class BottlesCards extends React.Component {
         <ScrollView
           style={styles.scrollView}
           contentContainerStyle={{paddingBottom: 70}}>
-          {bottle?.bottleListing?.error ? (
+          {bottle.bottleListing.error ? (
             <Text style={styles.listError}>No bottle sessions yet</Text>
           ) : (
             <View style={styles.trackList}>
               {bottle &&
-                bottle?.bottleListing?.result &&
-                bottle?.bottleListing?.result?.map((data, key) => {
+                bottle.bottleListing.result &&
+                bottle.bottleListing.result.map((data, key) => {
                   return (
                     <View style={styles.trackListItem} key={`track${key}`}>
                       <Text style={styles.startTime}>
@@ -310,22 +311,24 @@ class BottlesCards extends React.Component {
   }
 }
 
-// const mapStateToProps = state => ({
-//   bottle: state.bottleReducer,
-//   activeBaby: getActiveBaby(state),
-//   tabReducer: state.tabReducer,
-//   track: state.trackReducer,
-//   refreshData: state.commonReducer.refreshData,
-// });
+const mapStateToProps = state => ({
+  bottle: state.bottle,
+  activeBaby: getActiveBaby(state),
+  tab: state.tab,
+  track: state.track,
+  refreshData: state.common.refreshData,
+});
 
-// const mapDispatchToProps = {
-//   dispatchBottleListing: data => bottleActions.handleBottleListing(data),
-//   dispatchBottleDelete: data => bottleActions.handleBottleDelete(data),
-//   dispatchEditBottle: data => bottleActions.EditGetDataBottle(data),
-//   dispatchResetAuthState: () => authActions.resetAuthState(),
-//   dispatchGetAlarm: data => fetchPrevAlarmValue(data),
-//   dispatchRefresh: flag => commonActions.setRefreshData(flag),
-// };
+const mapDispatchToProps = {
+  dispatchBottleListing: data => handleBottleListing(data),
+  dispatchBottleDelete: data => handleBottleDelete(data),
+  dispatchEditBottle: data => editGetDataBottle(data),
+  dispatchResetAuthState: () => resetAuthState(),
+  dispatchGetAlarm: data => fetchPrevAlarmValue(data),
+  dispatchRefresh: flag => setRefreshData(flag),
+};
 
-// export default connect(mapStateToProps, mapDispatchToProps)(BottlesCards);
-export default BottlesCards;
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(withNavigationFocus(BottlesCards));

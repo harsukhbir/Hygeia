@@ -1,4 +1,5 @@
 import React from 'react';
+import {connect} from 'react-redux';
 import {
   View,
   Text,
@@ -11,11 +12,13 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import TextInput from '../../../src/components/TextInput';
 import ButtonComponent from '../../../src/components/ButtonComponent';
-import {showAlert} from '../../../src/utils/native';
+import {isEmptyObject, showAlert} from '../../../src/utils/native';
 import TimePicker from 'react-native-24h-timepicker';
 import moment from 'moment';
 import styles from './styles';
 import CustomTimePicker from '../../components/CustomTimePicker';
+import {clearMsg, handleBottleEdit} from '../../store/slices/bottleSlice';
+import {resetAuthState} from '../../store/slices/authSlice';
 
 class EditBottle extends React.Component {
   constructor(props) {
@@ -65,11 +68,11 @@ class EditBottle extends React.Component {
   componentDidUpdate() {
     const {
       card: {msg},
-      // dispatchClearCard,
+      dispatchClearCard,
       navigation,
     } = this.props;
     if (msg === 'EDIT_BOTTLE_SUCCESS') {
-      // dispatchClearCard();
+      dispatchClearCard();
       this.setState(() => {
         showAlert('Success', 'baby bottle update successfully.', '', () => {
           navigation.navigate('Track', {activeTab: 'Bottles'});
@@ -103,10 +106,10 @@ class EditBottle extends React.Component {
       amount: selectedAmount,
       note: NotesValue,
     };
-    // const {dispatchBottleEdit} = this.props;
-    // if (!isEmptyObject(data)) {
-    //   dispatchBottleEdit(data);
-    // }
+    const {dispatchBottleEdit} = this.props;
+    if (!isEmptyObject(data)) {
+      dispatchBottleEdit(data);
+    }
   }
 
   getTimeAMPM(data) {
@@ -314,14 +317,13 @@ class EditBottle extends React.Component {
 }
 
 const mapStateToProps = state => ({
-  card: state.bottleReducer,
+  card: state.bottle,
 });
 
-// const mapDispatchToProps = {
-//   dispatchBottleEdit: data => bottleActions.handleBottleEdit(data),
-//   dispatchClearCard: () => bottleActions.clearMsg(),
-//   dispatchResetAuthState: () => authActions.resetAuthState(),
-// };
+const mapDispatchToProps = {
+  dispatchBottleEdit: data => handleBottleEdit(data),
+  dispatchClearCard: () => clearMsg(),
+  dispatchResetAuthState: () => resetAuthState(),
+};
 
-// export default connect(mapStateToProps, mapDispatchToProps)(EditBottle);
-export default EditBottle;
+export default connect(mapStateToProps, mapDispatchToProps)(EditBottle);

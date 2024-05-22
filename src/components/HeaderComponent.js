@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import {withNavigation} from 'react-navigation';
 import {View, StyleSheet, Text, Image, TouchableOpacity} from 'react-native';
 import {Images} from '../../src/assets/images';
 import {
@@ -7,9 +8,16 @@ import {
   MenuOption,
   MenuTrigger,
 } from 'react-native-popup-menu';
+import {withSafeAreaInsets} from 'react-native-safe-area-context';
+import {connect} from 'react-redux';
 
 import moment from 'moment';
+import {isEmptyObject} from '../../src/utils/native';
 import FastImage from 'react-native-fast-image';
+import {compose} from 'redux';
+import {EditGetDataBaby, getBadyProfile} from '../store/slices/userSlice';
+import {getActiveBaby} from '../store/selectors';
+import {setActiveTab} from '../store/slices/tabSlice';
 
 const styles = StyleSheet.create({
   header: {
@@ -126,6 +134,8 @@ class HeaderComponent extends Component {
   }
 
   componentDidMount() {
+    const {dispatchProfileListng} = this.props;
+    dispatchProfileListng();
     let date = '2021-02-09';
     let date2 = '1995-06-01';
     let birthyear = moment(date2, 'YYYY');
@@ -133,23 +143,42 @@ class HeaderComponent extends Component {
     let age = visitdate.diff(birthyear, 'y');
   }
 
+  componentDidUpdate(prevProps) {
+    const {user, dispatchEditBaby, activeBaby} = this.props;
+    if (prevProps.user.isLoading === true && user.isLoading === false) {
+      if (isEmptyObject(activeBaby)) {
+        if (user.babyDetails && user.babyDetails.length > 0) {
+          dispatchEditBaby(user.babyDetails[0]);
+          this.setState({activeIndex: user.babyDetails[0].id});
+        }
+      } else {
+        this.setState({activeIndex: activeBaby.id});
+      }
+    }
+  }
+
   EditProfileHandler(data) {
     const {navigation} = this.props;
-    navigation?.navigate('EditProfile', {data});
+    navigation.navigate('EditProfile', {data});
   }
 
   SettingsHandler() {
     const {navigation} = this.props;
-    navigation?.navigate('Settings');
+    navigation.navigate('Settings');
   }
 
   ActiveBabyHandler(data) {
     this.setState({activeIndex: data.id});
+    const {dispatchEditBaby} = this.props;
+    if (!isEmptyObject(data)) {
+      dispatchEditBaby(data);
+    }
   }
 
   DashboardHandler() {
     const {navigation} = this.props;
-    navigation?.navigate('Dashboard');
+    this.props.dispatchSetTab('Dashboard');
+    navigation.navigate('Dashboard');
   }
 
   getWeight(data) {
@@ -161,8 +190,10 @@ class HeaderComponent extends Component {
   }
 
   render() {
+    const {user, insets} = this.props;
+    const {activeIndex} = this.state;
     return (
-      <View style={[styles.header]}>
+      <View style={[styles.header, {paddingTop: insets.top}]}>
         <TouchableOpacity
           style={styles.headerLogo}
           onPress={() => {
@@ -179,6 +210,25 @@ class HeaderComponent extends Component {
           <MenuTrigger
             style={styles.menuTrigger}
             onPress={() => this.setState({opened: true})}>
+            {user && user.babyEdit ? (
+              user.babyEdit.baby_profileupload ? (
+                <FastImage
+                  style={styles.babyImage}
+                  source={{
+                    uri: user.babyEdit.baby_profileupload,
+                    priority: FastImage.priority.low,
+                  }}
+                  resizeMode={FastImage.resizeMode.cover}
+                />
+              ) : (
+                <Image
+                  source={Images.eidtProfile.userprofileIcon}
+                  style={styles.babyImage}
+                />
+              )
+            ) : (
+              <View style={styles.babyPlaceholder} />
+            )}
             <Image
               source={Images.globalScreen.downVector}
               style={styles.downVector}
@@ -187,7 +237,110 @@ class HeaderComponent extends Component {
           <MenuOptions
             style={styles.menuOptions}
             optionsContainerStyle={{marginTop: 70, elevation: 10}}>
-            <MenuOption style={styles.menuOption} />
+            <MenuOption style={styles.menuOption}>
+              {user &&
+                user.babyDetails &&
+                user.babyDetails.map((data, index) => {
+                  return (
+                    <View style={styles.menuOptionItem} key={index}>
+                      <View style={styles.menuOptionHeader}>
+                        <TouchableOpacity
+                          style={styles.menuOptionHeaderLeft}
+                          onPress={() => {
+                            this.ActiveBabyHandler(data, index);
+                          }}>
+                          {data.baby_profileupload ? (
+                            <FastImage
+                              style={styles.menuOptionImage}
+                              source={{
+                                uri: data.baby_profileupload,
+                                priority: FastImage.priority.low,
+                              }}
+                              resizeMode={FastImage.resizeMode.cover}
+                            />
+                          ) : (
+                            <Image
+                              source={Images.eidtProfile.userprofileIcon}
+                              style={styles.menuOptionImage}
+                            />
+                          )}
+                          <Text
+                            style={[
+                              activeIndex === data.id
+                                ? styles.menuOptionName
+                                : styles.menuOptionNameDisable,
+                            ]}>
+                            {data.name}
+                          </Text>
+                        </TouchableOpacity>
+                        {activeIndex === data.id ? (
+                          <TouchableOpacity
+                            onPress={() => {
+                              this.EditProfileHandler(data);
+                              this.setState({opened: false});
+                            }}>
+                            <Image source={Images.BreastfeedCards.editIcon} />
+                          </TouchableOpacity>
+                        ) : (
+                          <TouchableOpacity
+                            onPress={() => {
+                              this.ActiveBabyHandler(data, index);
+                            }}>
+                            <Image source={Images.globalScreen.editIconGray} />
+                          </TouchableOpacity>
+                        )}
+                      </View>
+                      {activeIndex === data.id ? (
+                        <View style={styles.menuOptionContent}>
+                          <View style={styles.menuOptionContentItem}>
+                            <Text style={styles.contentItemBold}>Age: </Text>
+                            <View style={styles.ageContainer}>
+                              {moment().diff(data.birthday, 'years') !== '0' &&
+                              moment().diff(data.birthday, 'months') > '12' ? (
+                                <Text style={styles.contentItemLight}>
+                                  {moment().diff(data.birthday, 'years')} Years
+                                </Text>
+                              ) : null}
+                              {moment().diff(data.birthday, 'months') !== '0' &&
+                              moment().diff(data.birthday, 'months') < '12' ? (
+                                <Text style={styles.contentItemLight}>
+                                  {moment().diff(data.birthday, 'months')}{' '}
+                                  Months
+                                </Text>
+                              ) : null}
+                              {moment().diff(data.birthday, 'days') !== '0' &&
+                              moment().diff(data.birthday, 'months') < '1' &&
+                              moment().diff(data.birthday, 'months') < '1' ? (
+                                <Text style={styles.contentItemLight}>
+                                  {moment().diff(data.birthday, 'days')} Days
+                                </Text>
+                              ) : null}
+                            </View>
+                          </View>
+                          <View style={styles.menuOptionContentItem}>
+                            <Text style={styles.contentItemBold}>Height: </Text>
+                            <Text style={styles.contentItemLight}>
+                              {data.height} inches
+                            </Text>
+                          </View>
+                          <View style={styles.menuOptionContentItem}>
+                            <Text style={styles.contentItemBold}>Weight: </Text>
+                            <Text style={styles.contentItemLight}>
+                              {this.getWeight(data)}
+                              {/* {data.weight_lb}
+																	{" "}
+																	lbs,
+																	{data.weight_oz}
+																	{" "}
+																	oz */}
+                            </Text>
+                          </View>
+                        </View>
+                      ) : null}
+                    </View>
+                  );
+                })}
+            </MenuOption>
             <MenuOption style={styles.menuOption}>
               <TouchableOpacity
                 onPress={() => {
@@ -204,4 +357,19 @@ class HeaderComponent extends Component {
   }
 }
 
-export default HeaderComponent;
+const mapStateToProps = state => ({
+  user: state.user,
+  activeBaby: getActiveBaby(state),
+});
+
+const mapDispatchToProps = {
+  dispatchProfileListng: () => getBadyProfile(),
+  dispatchEditBaby: data => EditGetDataBaby(data),
+  dispatchSetTab: name => setActiveTab(name),
+};
+
+export default compose(
+  connect(mapStateToProps, mapDispatchToProps),
+  withNavigation,
+  withSafeAreaInsets,
+)(HeaderComponent);

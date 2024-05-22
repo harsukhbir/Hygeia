@@ -20,6 +20,14 @@ import {
 } from 'react-native-popup-menu';
 import moment from 'moment';
 import styles from '../styles';
+import {
+  EDIT_GET_DATA_DIAPER,
+  handleDiaperDelete,
+  handleDiaperListing,
+} from '../../../store/slices/diaperSlice';
+import {getActiveBaby} from '../../../store/selectors';
+import {resetAuthState} from '../../../store/slices/authSlice';
+import {setRefreshData} from '../../../store/slices/commonSlice';
 
 class DiapersCards extends React.Component {
   constructor(props) {
@@ -38,63 +46,57 @@ class DiapersCards extends React.Component {
   componentDidUpdate(prevProps) {
     const {currentDate, activeBaby} = this.props;
     if (
-      currentDate !== prevProps?.currentDate ||
-      (prevProps?.activeBaby &&
+      currentDate !== prevProps.currentDate ||
+      (prevProps.activeBaby &&
         activeBaby &&
-        prevProps?.activeBaby?.id !== activeBaby?.id)
+        prevProps.activeBaby.id !== activeBaby.id)
     ) {
       this.diaperFunction(currentDate, activeBaby);
     }
 
-    if (this.props?.refreshData) {
+    if (this.props.refreshData) {
       this.diaperFunction(currentDate, activeBaby);
-      // this.props?.dispatchRefresh(false);
+      this.props.dispatchRefresh(false);
     }
   }
 
   diaperFunction(currentDate, activeBaby) {
-    // const {dispatchDiaperListing} = this.props;
+    const {dispatchDiaperListing} = this.props;
     if (activeBaby) {
       const data = {
-        babyprofile_id: activeBaby?.id,
+        babyprofile_id: activeBaby.id,
         date: currentDate,
       };
-      // dispatchDiaperListing(data);
+      dispatchDiaperListing(data);
     }
   }
 
   redirectToAddEntry() {
     const {navigation} = this.props;
-    navigation.navigate('AddDiaper', {date: this.props?.currentDate});
+    navigation.navigate('AddDiaper', {date: this.props.currentDate});
   }
 
   HandleViewNotes(data) {
     const {ViewNoteModal} = this.state;
-    this.setState({opened: false, ViewNoteModal: data?.id});
+    this.setState({opened: false, ViewNoteModal: data.id});
   }
 
   HandleDeleteDiaper(key) {
     const data = {
       diaper_id: key,
     };
-    const {
-      // dispatchDiaperDelete,
-      navigation,
-    } = this.props;
+    const {dispatchDiaperDelete, navigation} = this.props;
     if (!isEmptyObject(data)) {
-      // dispatchDiaperDelete(data);
+      dispatchDiaperDelete(data);
       this.setState({opened: false});
       navigation.setParams({activeTab: 'Diapers'});
     }
   }
 
   HandleEditDiaper(data) {
-    const {
-      navigation,
-      // dispatchEditDiaper
-    } = this.props;
+    const {navigation, dispatchEditDiaper} = this.props;
     if (!isEmptyObject(data)) {
-      // dispatchEditDiaper(data);
+      dispatchEditDiaper(data);
     }
     this.setState({
       opened: false,
@@ -122,8 +124,8 @@ class DiapersCards extends React.Component {
             </View>
             <Text style={styles.sessionsTitle}>
               {diaper &&
-                diaper?.diaperListing?.result &&
-                diaper?.diaperListing?.result?.length}{' '}
+                diaper.diaperListing.result &&
+                diaper.diaperListing.result.length}{' '}
               Sessions
             </Text>
           </View>
@@ -131,20 +133,20 @@ class DiapersCards extends React.Component {
         <ScrollView
           style={styles.scrollView}
           contentContainerStyle={{paddingBottom: 70}}>
-          {diaper?.diaperListing?.error ? (
+          {diaper.diaperListing.error ? (
             <Text style={styles.listError}>No diaper sessions yet</Text>
           ) : (
             <View style={styles.trackList}>
               {diaper &&
-                diaper?.diaperListing?.result &&
-                diaper?.diaperListing?.result?.map((data, key) => {
+                diaper.diaperListing.result &&
+                diaper.diaperListing.result.map((data, key) => {
                   return (
                     <View style={styles.trackListItem} key={`track${key}`}>
                       <Text style={styles.startTime}>
-                        {this.convertTime(data?.start_time)}
+                        {this.convertTime(data.start_time)}
                       </Text>
                       <View style={styles.diaper}>
-                        {data?.type_of_diaper === 'Poop' && (
+                        {data.type_of_diaper === 'Poop' && (
                           <View style={styles.diaperItem}>
                             <Image
                               source={Images.DiapersCards.poopIcon}
@@ -153,7 +155,7 @@ class DiapersCards extends React.Component {
                             <Text style={styles.listText}>Poop</Text>
                           </View>
                         )}
-                        {data?.type_of_diaper === 'Pee' && (
+                        {data.type_of_diaper === 'Pee' && (
                           <View style={styles.diaperItem}>
                             <Image
                               source={Images.DiapersCards.peeIcon}
@@ -162,8 +164,8 @@ class DiapersCards extends React.Component {
                             <Text style={styles.listText}>Pee</Text>
                           </View>
                         )}
-                        {data?.type_of_diaper !== 'Pee' &&
-                          data?.type_of_diaper !== 'Poop' && (
+                        {data.type_of_diaper !== 'Pee' &&
+                          data.type_of_diaper !== 'Poop' && (
                             <View style={styles.diaperItem}>
                               <Image
                                 source={Images.DiapersCards.peepoopIcon}
@@ -175,20 +177,20 @@ class DiapersCards extends React.Component {
                       </View>
                       <View style={styles.trackMenu}>
                         <Menu
-                          opened={this.state.opened === data?.id}
+                          opened={this.state.opened === data.id}
                           onBackdropPress={() =>
                             this.setState({opened: false})
                           }>
                           <MenuTrigger
                             style={styles.menuTrigger}
-                            onPress={() => this.setState({opened: data?.id})}>
+                            onPress={() => this.setState({opened: data.id})}>
                             <Image
                               source={Images.DiapersCards.dotsIcon}
                               style={styles.dotsIcon}
                             />
                           </MenuTrigger>
                           <MenuOptions style={styles.menuOptionS}>
-                            {data?.note ? (
+                            {data.note ? (
                               <MenuOption
                                 style={styles.menuOption}
                                 onSelect={() => this.HandleViewNotes(data)}>
@@ -212,7 +214,7 @@ class DiapersCards extends React.Component {
                               <TouchableOpacity
                                 style={styles.menuOptionInner}
                                 onPress={() =>
-                                  this.HandleDeleteDiaper(data?.id)
+                                  this.HandleDeleteDiaper(data.id)
                                 }>
                                 <Image
                                   source={Images.DiapersCards.deleteIcon}
@@ -227,13 +229,13 @@ class DiapersCards extends React.Component {
                         <Modal
                           animationType="slide"
                           transparent={true}
-                          visible={ViewNoteModal === data?.id}
+                          visible={ViewNoteModal === data.id}
                           onRequestClose={() => {
                             Alert.alert('Modal has been closed.');
                           }}>
                           <View style={styles.centeredView}>
                             <View style={styles.modalView}>
-                              <Text style={styles.modalText}>{data?.note}</Text>
+                              <Text style={styles.modalText}>{data.note}</Text>
                               <TouchableHighlight
                                 style={styles.closeModal}
                                 onPress={() => {
@@ -267,19 +269,18 @@ class DiapersCards extends React.Component {
   }
 }
 
-// const mapStateToProps = state => ({
-//   diaper: state.diaperReducer,
-//   activeBaby: getActiveBaby(state),
-//   refreshData: state.commonReducer.refreshData,
-// });
+const mapStateToProps = state => ({
+  diaper: state.diaper,
+  activeBaby: getActiveBaby(state),
+  refreshData: state.common.refreshData,
+});
 
-// const mapDispatchToProps = {
-//   dispatchDiaperListing: data => diaperActions.handleDiaperListing(data),
-//   dispatchDiaperDelete: data => diaperActions.handleDiaperDelete(data),
-//   dispatchEditDiaper: data => diaperActions.EditGetDataDiaper(data),
-//   dispatchResetAuthState: () => authActions.resetAuthState(),
-//   dispatchRefresh: flag => commonActions.setRefreshData(flag),
-// };
+const mapDispatchToProps = {
+  dispatchDiaperListing: data => handleDiaperListing(data),
+  dispatchDiaperDelete: data => handleDiaperDelete(data),
+  dispatchEditDiaper: data => EDIT_GET_DATA_DIAPER(data),
+  dispatchResetAuthState: () => resetAuthState(),
+  dispatchRefresh: flag => setRefreshData(flag),
+};
 
-// export default connect(mapStateToProps, mapDispatchToProps)(DiapersCards);
-export default DiapersCards;
+export default connect(mapStateToProps, mapDispatchToProps)(DiapersCards);

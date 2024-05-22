@@ -1,7 +1,9 @@
 import React from 'react';
 import {View, Text, TouchableOpacity, Linking} from 'react-native';
+import {connect} from 'react-redux';
 import styles from './styles';
 import LoadingIndicator from '../../../components/LoadingIndicator';
+import {loadingEnd, loadingStart} from '../../../store/slices/commonSlice';
 
 class TutorialsScreen extends React.Component {
   constructor() {
@@ -14,13 +16,13 @@ class TutorialsScreen extends React.Component {
   }
 
   setModalVisible = id => {
-    // const {dispatchLoadingStart, dispatchLoadingEnd} = this.props;
+    const {dispatchLoadingStart, dispatchLoadingEnd} = this.props;
     // this.setState({ isLoading: true });
-    // dispatchLoadingStart();
+    dispatchLoadingStart();
     fetch(`https://player.vimeo.com/video/${id}/config`)
       .then(res => res.json())
       .then(res => {
-        // dispatchLoadingEnd();
+        dispatchLoadingEnd();
         this.setState({
           modalVisible: true,
           tutorialsVideo:
@@ -28,7 +30,7 @@ class TutorialsScreen extends React.Component {
         });
       })
       .catch(err => {
-        // dispatchLoadingEnd();
+        dispatchLoadingEnd();
       });
     // this.setState({ modalVisible: visible, tutorialsVideo: video });
   };
@@ -170,10 +172,9 @@ class TutorialsScreen extends React.Component {
   }
 }
 
-// const mapDispatchToProps = {
-//   dispatchLoadingStart: () => start(),
-//   dispatchLoadingEnd: () => end(),
-// };
+const mapDispatchToProps = {
+  dispatchLoadingStart: () => loadingStart(),
+  dispatchLoadingEnd: () => loadingEnd(),
+};
 
-// export default connect(null, mapDispatchToProps)(TutorialsScreen);
-export default TutorialsScreen;
+export default connect(null, mapDispatchToProps)(TutorialsScreen);

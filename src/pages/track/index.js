@@ -1,5 +1,5 @@
-/* eslint-disable react-native/no-inline-styles */
 import React from 'react';
+import {connect} from 'react-redux';
 import {View, Text, Image, TouchableOpacity} from 'react-native';
 
 import {Tab, Tabs, ScrollableTab} from 'native-base';
@@ -11,6 +11,9 @@ import PumpCards from './pump';
 import BottlesCards from './bottles';
 import DiapersCards from './diapers';
 import GrowthCards from './growth';
+import {getIndexData} from './tab-menu';
+import {setTrackActiveTab} from '../../store/slices/tabSlice';
+import {resetAuthState} from '../../store/slices/authSlice';
 
 class TrackScreen extends React.Component {
   constructor(props) {
@@ -36,17 +39,56 @@ class TrackScreen extends React.Component {
 
   render() {
     const {currentDate} = this.state;
-    const {navigation} = this.props;
+    const {
+      navigation,
+      tab: {trackActiveTab},
+    } = this.props;
     return (
       <View style={styles.container}>
         <View style={styles.TrackHeader}>
-          <TouchableOpacity
-            style={styles.prevArrow}
-            onPress={() => {
-              this.prevClick(currentDate);
-            }}>
-            <Image source={Images.Track.prevIcon} style={styles.ArrowIcon} />
-          </TouchableOpacity>
+          {trackActiveTab !== 'Growth' && (
+            <TouchableOpacity
+              style={styles.prevArrow}
+              onPress={() => {
+                this.prevClick(currentDate);
+              }}>
+              <Image source={Images.Track.prevIcon} style={styles.ArrowIcon} />
+            </TouchableOpacity>
+          )}
+          {trackActiveTab !== 'Growth' ? (
+            <Text style={styles.trackTitle}>
+              {currentDate == moment().format('MMMM DD, YYYY')
+                ? 'Today'
+                : (currentDate ==
+                    moment().subtract(1, 'days').format('MMMM DD, YYYY')) ==
+                  true
+                ? 'Yesterday'
+                : currentDate}
+            </Text>
+          ) : (
+            <Text style={styles.trackTitle}>Growth</Text>
+          )}
+          {currentDate == moment().format('MMMM DD, YYYY')
+            ? trackActiveTab !== 'Growth' && (
+                <TouchableOpacity style={styles.nextArrow}>
+                  <Image
+                    source={Images.Track.nextIcon}
+                    style={styles.Disable}
+                  />
+                </TouchableOpacity>
+              )
+            : trackActiveTab !== 'Growth' && (
+                <TouchableOpacity
+                  style={styles.nextArrow}
+                  onPress={() => {
+                    this.nextClick(currentDate);
+                  }}>
+                  <Image
+                    source={Images.Track.nextIcon}
+                    style={styles.ArrowIcon}
+                  />
+                </TouchableOpacity>
+              )}
         </View>
         <View style={{flex: 1, flexGrow: 1, marginTop: 10}}>
           <Tabs
@@ -57,7 +99,7 @@ class TrackScreen extends React.Component {
               // this.setState({
               // 	activeIndex: i
               // })
-              //! shiva-> this.props.dispatchSetTrackActiveTab(getIndexData(i).id);
+              this.props.dispatchSetTrackActiveTab(getIndexData(i).id);
             }}
             renderTabBar={() => (
               <ScrollableTab
@@ -133,4 +175,15 @@ class TrackScreen extends React.Component {
   }
 }
 
-export default TrackScreen;
+const mapDispatchToProps = {
+  dispatchResetAuthState: () => resetAuthState(),
+  dispatchSetTrackActiveTab: data => setTrackActiveTab(data),
+};
+
+const mapStateToProps = state => {
+  return {
+    tab: state.tab,
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(TrackScreen);

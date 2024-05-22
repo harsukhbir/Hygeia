@@ -1,8 +1,10 @@
 import React from 'react';
+import {connect} from 'react-redux';
 import {View, Text} from 'react-native';
 import LanguageSwitcher from '../../../src/components/LanguageSwitcher';
 import {translate} from '../../../src/locales/i18n';
 import styles from './styles';
+import {resetAuthState} from '../../store/slices/authSlice';
 
 class HomeScreen extends React.Component {
   static navigationOptions = ({navigation, screenProps: {i18n, insets}}) => {
@@ -17,7 +19,8 @@ class HomeScreen extends React.Component {
   componentDidMount() {}
 
   logOutHandler() {
-    console.log('log out clicked!');
+    const {dispatchResetAuthState} = this.props;
+    dispatchResetAuthState();
   }
 
   render() {
@@ -35,4 +38,8 @@ class HomeScreen extends React.Component {
   }
 }
 
-export default HomeScreen;
+const mapDispatchToProps = {
+  dispatchResetAuthState: () => resetAuthState(),
+};
+
+export default connect(null, mapDispatchToProps)(HomeScreen);

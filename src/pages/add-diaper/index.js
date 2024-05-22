@@ -1,4 +1,5 @@
 import React from 'react';
+import {connect} from 'react-redux';
 import {
   View,
   Text,
@@ -8,8 +9,6 @@ import {
 } from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-// import { Switch } from 'native-base';
-// import MaterialIcon from "react-native-vector-icons/MaterialIcons";
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import TextInput from '../../../src/components/TextInput';
 import ButtonComponent from '../../../src/components/ButtonComponent';
@@ -18,6 +17,8 @@ import TimePicker from 'react-native-24h-timepicker';
 import moment from 'moment';
 import styles from './styles';
 import CustomTimePicker from '../../components/CustomTimePicker';
+import {CLEAR_MSG, handleDiaperCreate} from '../../store/slices/diaperSlice';
+import {resetAuthState} from '../../store/slices/authSlice';
 import {getActiveBaby} from '../../store/selectors';
 
 class AddDiaper extends React.Component {
@@ -37,11 +38,11 @@ class AddDiaper extends React.Component {
   componentDidUpdate() {
     const {
       card: {msg},
-      // dispatchClearCard,
+      dispatchClearCard,
       navigation,
     } = this.props;
     if (msg === 'ADD_DIAPER_SUCCESS') {
-      // dispatchClearCard();
+      dispatchClearCard();
       this.setState(() => {
         showAlert('Success', 'Diaper entry created successfully', '', () => {
           navigation.navigate('Track', {activeTab: 'Diapers'});
@@ -90,7 +91,7 @@ class AddDiaper extends React.Component {
   saveHandler() {
     const {time, NotesValue, selectedFeed} = this.state;
     const {
-      // dispatchDiaperCreate,
+      dispatchDiaperCreate,
       activeBaby,
       navigation: {
         state: {params},
@@ -110,7 +111,7 @@ class AddDiaper extends React.Component {
       created_at: date_time,
     };
     if (!isEmptyObject(data)) {
-      // dispatchDiaperCreate(data);
+      dispatchDiaperCreate(data);
     }
   }
 
@@ -263,15 +264,14 @@ class AddDiaper extends React.Component {
 }
 
 const mapStateToProps = state => ({
-  card: state.diaperReducer,
+  card: state.diaper,
   activeBaby: getActiveBaby(state),
 });
 
-// const mapDispatchToProps = {
-//   dispatchDiaperCreate: data => diaperActions.handleDiaperCreate(data),
-//   dispatchClearCard: () => diaperActions.clearMsg(),
-//   dispatchResetAuthState: () => authActions.resetAuthState(),
-// };
+const mapDispatchToProps = {
+  dispatchDiaperCreate: data => handleDiaperCreate(data),
+  dispatchClearCard: () => CLEAR_MSG(),
+  dispatchResetAuthState: () => resetAuthState(),
+};
 
-// export default connect(mapStateToProps, mapDispatchToProps)(AddDiaper);
-export default AddDiaper;
+export default connect(mapStateToProps, mapDispatchToProps)(AddDiaper);

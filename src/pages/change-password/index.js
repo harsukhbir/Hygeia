@@ -2,6 +2,7 @@ import React from 'react';
 import {View, Text, Keyboard} from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import TextInput from '../../../src/components/TextInput';
+import {connect} from 'react-redux';
 import ButtonComponent from '../../../src/components/ButtonComponent';
 import {isEmpty} from '../../../src/utils/native';
 import {translate} from '../../../src/locales/i18n';
@@ -93,7 +94,7 @@ class ChangePasswordScreen extends React.Component {
 
   onSubmit() {
     const {password, currentpassword, cpassword} = this.state;
-    // const {dispatchchangePassword} = this.props;
+    const {dispatchchangePassword} = this.props;
 
     /* REQUIRED FIELDS VALIDATION */
     if (this.isValidResetPasswordFileds() === false) {
@@ -111,7 +112,7 @@ class ChangePasswordScreen extends React.Component {
       data.append('current_password', currentpassword);
       data.append('new_password', password);
       data.append('confirm_password', cpassword);
-      // dispatchchangePassword(data);
+      dispatchchangePassword(data);
     }
   }
 
@@ -201,9 +202,8 @@ class ChangePasswordScreen extends React.Component {
     );
   }
 }
-// const mapDispatchToProps = {
-//   dispatchchangePassword: data => userAction.changePassword(data),
-// };
+const mapDispatchToProps = {
+  //   dispatchchangePassword: data => changePassword(data),
+};
 
-// export default connect(null, mapDispatchToProps)(ChangePasswordScreen);
-export default ChangePasswordScreen;
+export default connect(null, mapDispatchToProps)(ChangePasswordScreen);

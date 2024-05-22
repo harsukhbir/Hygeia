@@ -1,4 +1,5 @@
 import React from 'react';
+import {connect} from 'react-redux';
 import {
   View,
   Text,
@@ -16,7 +17,8 @@ import OtpInputs from '../../../../src/components/OtpInputs';
 import {translate} from '../../../../src/locales/i18n';
 import SignupForm from './form';
 import styles from './styles';
-import {getDeviceId, getOS} from '../../../services/device';
+import {getFirebaseToken, getDeviceId, getOS} from '../../../services/device';
+import {handleSignUp} from '../../../store/slices/authSlice';
 
 class SignupScreen extends React.Component {
   constructor(props) {
@@ -72,36 +74,38 @@ class SignupScreen extends React.Component {
 
   async submitForm(values) {
     try {
+      // const device_token = await getFirebaseToken();
       const device_id = await getDeviceId();
       const os_type = getOS();
 
-      // const {dispatchSignUp} = this.props;
+      const {dispatchSignUp} = this.props;
       if (!isEmptyObject(values)) {
         values = {
           ...values,
           device_id,
+          // device_token,
           os_type,
         };
         this.setState({email: values.email});
-        // dispatchSignUp(values);
+        dispatchSignUp(values);
       }
-    } catch (error) {
-      console.log('error in signup', error);
+    } catch (e) {
+      console.log('error in signup', e);
     }
   }
 
   changePinHandler(otp) {
-    // const {dispatchVerifySignUpOTP} = this.props;
-    // const {email} = this.state;
+    const {dispatchVerifySignUpOTP} = this.props;
+    const {email} = this.state;
 
     this.setState({OTP: otp});
     if (otp.length === 4) {
       Keyboard.dismiss();
-      // const body = {
-      //   email: email,
-      //   otp: Number(otp),
-      // };
-      // dispatchVerifySignUpOTP(body);
+      const body = {
+        email: email,
+        otp: Number(otp),
+      };
+      dispatchVerifySignUpOTP(body);
       this.setState({resetOTPInput: true, OTP: '', otpErrorMessage: ''});
     }
   }
@@ -126,8 +130,8 @@ class SignupScreen extends React.Component {
   };
 
   resend = () => {
-    // const {dispatchForgotPassword} = this.props;
-    // dispatchForgotPassword({email: this.state.email});
+    const {dispatchForgotPassword} = this.props;
+    dispatchForgotPassword({email: this.state.email});
   };
 
   render() {
@@ -232,15 +236,14 @@ class SignupScreen extends React.Component {
     );
   }
 }
-// const mapStateToProps = state => ({
-//   auth: state.authReducer,
-// });
+const mapStateToProps = state => ({
+  auth: state.auth,
+});
 
-// const mapDispatchToProps = {
-//   dispatchSignUp: data => authActions.handleSignUp(data),
-//   dispatchVerifySignUpOTP: data => authActions.handleVerifySignUpOTP(data),
-//   dispatchForgotPassword: data => authActions.handleForgotPassword(data),
-// };
+const mapDispatchToProps = {
+  dispatchSignUp: data => handleSignUp(data),
+  // dispatchVerifySignUpOTP: data => handleVerifySignUpOTP(data),
+  // dispatchForgotPassword: data => handleForgotPassword(data),
+};
 
-// export default connect(mapStateToProps, mapDispatchToProps)(SignupScreen);
-export default SignupScreen;
+export default connect(mapStateToProps, mapDispatchToProps)(SignupScreen);

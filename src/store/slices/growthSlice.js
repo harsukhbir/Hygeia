@@ -62,7 +62,7 @@ const growthSlice = createSlice({
       state.growthListing.push(action.payload);
     },
   },
-  extraReducers: builder => {
+  extras: builder => {
     builder
       .addCase(handleGrowthCreate.pending, state => {
         state.AddgrowthSuccessful = false;

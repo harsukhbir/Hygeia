@@ -160,7 +160,7 @@ class TabBar extends Component {
 }
 
 const mapStateToProps = state => ({
-  tab: state.tabReducer,
+  tab: state.tab,
 });
 
 const mapDisptachToProps = {

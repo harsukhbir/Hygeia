@@ -11,6 +11,7 @@ export const handleLogIn = createAsyncThunk(
     try {
       const response = await AuthService.handleLogin(data);
       dispatch(loadingEnd());
+      console.log('login response:  ', response.data);
       return response.data;
     } catch (error) {
       dispatch(loadingEnd());
@@ -32,6 +33,7 @@ export const handleSignUp = createAsyncThunk(
     try {
       const response = await AuthService.handleSignup(data);
       dispatch(loadingEnd());
+      console.log(response.data);
       return response.data;
     } catch (error) {
       dispatch(loadingEnd());
@@ -82,7 +84,7 @@ export const authSlice = createSlice({
       state.showOtpFromLogin = action.payload;
     },
   },
-  extraReducers: builder => {
+  extras: builder => {
     builder
       .addCase(handleLogIn.fulfilled, (state, action) => {
         const isFirstTime = action.payload.result.first_login === 'yes';

@@ -118,7 +118,7 @@ const bottleSlice = createSlice({
       state.bottleEdit = action.payload;
     },
   },
-  extraReducers: builder => {
+  extras: builder => {
     builder
       .addCase(handleBottleCreate.fulfilled, (state, action) => {
         state.AddbottleSuccessful = true;

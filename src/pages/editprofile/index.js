@@ -1,9 +1,10 @@
 import React from 'react';
+import {connect} from 'react-redux';
 import {
   View,
-  Image,
   Text,
   ScrollView,
+  Image,
   TouchableOpacity,
   Keyboard,
 } from 'react-native';
@@ -21,10 +22,11 @@ import {
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import {launchImageLibrary} from 'react-native-image-picker';
 import Moment from 'moment';
-// import { translate } from "../../../src/locales/i18n";
 import styles from './styles';
 import moment from 'moment';
 import ImageResizer from '@bam.tech/react-native-image-resizer';
+import {resetAuthState} from '../../store/slices/authSlice';
+import {getBadyProfile, updateProfileData} from '../../store/slices/userSlice';
 
 class EditProfileScreen extends React.Component {
   constructor(props) {
@@ -96,9 +98,8 @@ class EditProfileScreen extends React.Component {
   // }
 
   logOutHandler() {
-    console.log('log out clicked');
-    // const {dispatchResetAuthState} = this.props;
-    // dispatchResetAuthState();
+    const {dispatchResetAuthState} = this.props;
+    dispatchResetAuthState();
   }
 
   cancelbuttonClicked() {
@@ -116,10 +117,7 @@ class EditProfileScreen extends React.Component {
       selectedOZWeight,
       babyprofile_id,
     } = this.state;
-    const {
-      // dispatchUpdateProfile,
-      navigation,
-    } = this.props;
+    const {dispatchUpdateProfile, navigation} = this.props;
     let data = new FormData();
     if (avatarSource) {
       data.append('baby_profileupload', {
@@ -137,7 +135,7 @@ class EditProfileScreen extends React.Component {
     data.append('height', selectedHeight);
     data.append('weight_oz', selectedOZWeight);
     data.append('weight_lb', selectedLBWeight);
-    // dispatchUpdateProfile(data, navigation);
+    dispatchUpdateProfile(data, navigation);
     // navigation.navigate("Dashboard");
   }
 
@@ -469,15 +467,14 @@ class EditProfileScreen extends React.Component {
   }
 }
 const mapStateToProps = state => ({
-  babyDetails: state.userReducer,
+  babyDetails: state.user,
 });
 
-// const mapDispatchToProps = {
-//   dispatchResetAuthState: () => authActions.resetAuthState(),
-//   dispatchUserProfileGet: () => userAction.getBadyProfile(),
-//   dispatchUpdateProfile: (data, navigation) =>
-//     userAction.updateProfileData(data, navigation),
-// };
+const mapDispatchToProps = {
+  dispatchResetAuthState: () => resetAuthState(),
+  dispatchUserProfileGet: () => getBadyProfile(),
+  dispatchUpdateProfile: (data, navigation) =>
+    updateProfileData(data, navigation),
+};
 
-// export default connect(mapStateToProps, mapDispatchToProps)(EditProfileScreen);
-export default EditProfileScreen;
+export default connect(mapStateToProps, mapDispatchToProps)(EditProfileScreen);

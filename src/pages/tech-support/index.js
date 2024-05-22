@@ -1,10 +1,12 @@
 import React from 'react';
+import {connect} from 'react-redux';
 import {View, Text, ScrollView, Keyboard} from 'react-native';
 import TextInput from '../../../src/components/TextInput';
 import {translate} from '../../../src/locales/i18n';
 import ButtonComponent from '../../../src/components/ButtonComponent';
 import {isEmpty, showAlert} from '../../../src/utils/native';
 import styles from './styles';
+import {handleTechForm} from '../../store/slices/contactFormSlice';
 
 class TechSupportScreen extends React.Component {
   constructor(props) {
@@ -89,10 +91,10 @@ class TechSupportScreen extends React.Component {
       phone_no: phonenumber,
       message: message,
     };
-    // const {dispatchTechSupportContactForm} = this.props;
-    // if (this.isValid() === true) {
-    //   dispatchTechSupportContactForm(userData);
-    // }
+    const {dispatchTechSupportContactForm} = this.props;
+    if (this.isValid() === true) {
+      dispatchTechSupportContactForm(userData);
+    }
   }
 
   render() {
@@ -153,9 +155,7 @@ class TechSupportScreen extends React.Component {
                 this.setState({email: value});
               }}
               onSubmitEditing={() => {
-                if (this.phoneInput) {
-                  this.phoneInput.focus();
-                }
+                this.phoneInput.focus();
               }}
             />
             <TextInput
@@ -225,13 +225,11 @@ class TechSupportScreen extends React.Component {
 }
 
 const mapStateToProps = state => ({
-  contactForm: state.contactFormReducer,
+  contactForm: state.contactForm,
 });
 
-// const mapDispatchToProps = {
-//   dispatchTechSupportContactForm: data =>
-//     contactFormActions.handleTechForm(data),
-// };
+const mapDispatchToProps = {
+  dispatchTechSupportContactForm: data => handleTechForm(data),
+};
 
-// export default connect(mapStateToProps, mapDispatchToProps)(TechSupportScreen);
-export default TechSupportScreen;
+export default connect(mapStateToProps, mapDispatchToProps)(TechSupportScreen);

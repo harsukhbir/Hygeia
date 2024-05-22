@@ -1,4 +1,5 @@
 import React from 'react';
+import {connect} from 'react-redux';
 import {
   View,
   Text,
@@ -12,7 +13,11 @@ import {Images} from '../../../../src/assets/images';
 import {LineChart} from 'react-native-chart-kit';
 import moment from 'moment';
 import styles from './styles';
+import {handleGrowthListing} from '../../../store/slices/growthSlice';
+import {resetAuthState} from '../../../store/slices/authSlice';
+import {getActiveBaby} from '../../../store/selectors';
 
+let temp = [];
 const chartData = [
   'Jan',
   'Feb',
@@ -67,34 +72,33 @@ class GrowthCards extends React.Component {
   componentDidUpdate(prevProps) {
     const {currentDate, activeBaby} = this.props;
     if (
-      currentDate !== prevProps?.currentDate ||
-      (prevProps?.activeBaby &&
+      currentDate !== prevProps.currentDate ||
+      (prevProps.activeBaby &&
         activeBaby &&
-        prevProps?.activeBaby.id !== activeBaby.id)
+        prevProps.activeBaby.id !== activeBaby.id)
     ) {
       this.growthFunction(currentDate, activeBaby);
     }
 
     if (
-      prevProps?.tabReducer?.trackActiveTab !==
-        this.props.tabReducer?.trackActiveTab &&
+      prevProps.tab.trackActiveTab !== this.props.tab.trackActiveTab &&
       activeBaby &&
       activeBaby.id
     ) {
-      if (this.props.tabReducer?.trackActiveTab === 'Growth') {
+      if (this.props.tab.trackActiveTab === 'Growth') {
         this.growthFunction(currentDate, activeBaby);
       }
     }
   }
 
   growthFunction(currentDate, activeBaby) {
-    // const {dispatchGrowthListing} = this.props;
+    const {dispatchGrowthListing} = this.props;
     if (activeBaby) {
       const data = {
         babyprofile_id: activeBaby.id,
         date: moment(currentDate).format('YYYY-MM-DD'),
       };
-      // dispatchGrowthListing(data);
+      dispatchGrowthListing(data);
     }
   }
 
@@ -143,8 +147,9 @@ class GrowthCards extends React.Component {
   }
 
   render() {
+    temp = [];
     const {growth} = this.props;
-    let list = growth?.growthListing || [];
+    let list = growth.growthListing || [];
 
     const tmpStaticData = [];
     let counter = 5;
@@ -163,7 +168,7 @@ class GrowthCards extends React.Component {
       // if(chartData !== "Mar" & )
     }
 
-    list = list?.sort(function compare(a, b) {
+    list = list.sort(function compare(a, b) {
       var dateA = new Date(a.date);
       var dateB = new Date(b.date);
       return dateA - dateB;
@@ -378,10 +383,9 @@ class GrowthCards extends React.Component {
 
     const {selectedPoint, from, isModalOpen} = this.state;
 
-    const currentHeight = list?.length > 0 ? list[list?.length - 1].height : 0;
-    const currentWeight =
-      list?.length > 0 ? list[list?.length - 1].weight_lb : 0;
-    const currentOz = list?.length > 0 ? list[list?.length - 1].weight_oz : 0;
+    const currentHeight = list.length > 0 ? list[list.length - 1].height : 0;
+    const currentWeight = list.length > 0 ? list[list.length - 1].weight_lb : 0;
+    const currentOz = list.length > 0 ? list[list.length - 1].weight_oz : 0;
 
     // const hidePointIndexes = this.getHidePointIndexs(tmpStaticData);
 
@@ -544,17 +548,16 @@ class GrowthCards extends React.Component {
   }
 }
 
-// const mapStateToProps = state => ({
-//   growth: state.growthReducer,
-//   activeBaby: getActiveBaby(state),
-//   tabReducer: state.tabReducer,
-//   track: state.trackReducer,
-// });
+const mapStateToProps = state => ({
+  growth: state.growth,
+  activeBaby: getActiveBaby(state),
+  tab: state.tab,
+  track: state.track,
+});
 
-// const mapDispatchToProps = {
-//   dispatchGrowthListing: data => growthActions.handleGrowthListing(data),
-//   dispatchResetAuthState: () => authActions.resetAuthState(),
-// };
+const mapDispatchToProps = {
+  dispatchGrowthListing: data => handleGrowthListing(data),
+  dispatchResetAuthState: () => resetAuthState(),
+};
 
-// export default connect(mapStateToProps, mapDispatchToProps)(GrowthCards);
-export default GrowthCards;
+export default connect(mapStateToProps, mapDispatchToProps)(GrowthCards);

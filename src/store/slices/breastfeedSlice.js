@@ -124,7 +124,7 @@ const breastfeedSlice = createSlice({
       Object.assign(state, initialState);
     },
   },
-  extraReducers: builder => {
+  extras: builder => {
     builder
       .addCase(handleBreastfeedCreate.fulfilled, (state, action) => {
         state.AddBreastfeedSuccessful = true;

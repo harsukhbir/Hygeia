@@ -17,7 +17,7 @@ export const createProfile = createAsyncThunk(
     dispatch(loadingStart());
     try {
       const response = await Services.CreateProfiles(data);
-      const babyUser = getState().userReducer.babyDetails;
+      const babyUser = getState().user.babyDetails;
       const updateData = [...babyUser, response.data.result.profiles];
       dispatch(updateProfileSucess(updateData));
       dispatch(loadingEnd());
@@ -34,7 +34,7 @@ const createBabySlice = createSlice({
   name: 'createBaby',
   initialState,
   reducers: {},
-  extraReducers: builder => {
+  extras: builder => {
     builder
       .addCase(createProfile.pending, state => {
         state.isLoading = true;

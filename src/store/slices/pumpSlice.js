@@ -121,7 +121,7 @@ const pumpSlice = createSlice({
       state.msg = 'EDIT_PUMP_SUCCESS';
     },
   },
-  extraReducers: builder => {
+  extras: builder => {
     builder
       .addCase(handlePumpCreate.pending, state => {
         state.AddpumpSuccessful = false;

@@ -125,7 +125,7 @@ const diaperSlice = createSlice({
       state.msg = 'EDIT_DIAPER_SUCCESS';
     },
   },
-  extraReducers: builder => {
+  extras: builder => {
     builder
       .addCase(handleDiaperCreate.pending, state => {
         state.AddDiaperSuccessful = false;

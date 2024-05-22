@@ -9,17 +9,17 @@ import {
 } from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-// import { Switch } from 'native-base';
-// import MaterialIcon from "react-native-vector-icons/MaterialIcons";
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import TextInput from '../../../src/components/TextInput';
 import ButtonComponent from '../../../src/components/ButtonComponent';
-
-import {showAlert} from '../../../src/utils/native';
+import {isEmptyObject, showAlert} from '../../../src/utils/native';
 import TimePicker from 'react-native-24h-timepicker';
 import moment from 'moment';
 import styles from './styles';
 import CustomTimePicker from '../../components/CustomTimePicker';
+import {getActiveBaby} from '../../store/selectors';
+import {clearMsg, handleBottleCreate} from '../../store/slices/bottleSlice';
+import {resetAuthState} from '../../store/slices/authSlice';
 
 class AddBottle extends React.Component {
   constructor(props) {
@@ -68,9 +68,11 @@ class AddBottle extends React.Component {
   componentDidUpdate() {
     const {
       card: {msg},
+      dispatchClearCard,
       navigation,
     } = this.props;
     if (msg === 'ADD_BOTTLE_SUCCESS') {
+      dispatchClearCard();
       this.setState(() => {
         showAlert('Success', 'Bottle entry created successfully', '', () => {
           navigation.navigate('Track', {activeTab: 'Bottles'});
@@ -97,6 +99,7 @@ class AddBottle extends React.Component {
   saveHandler() {
     const {time, NotesValue, selectedAmount, selectedFeed} = this.state;
     const {
+      dispatchBottleCreate,
       activeBaby,
       navigation: {
         state: {params},
@@ -117,6 +120,9 @@ class AddBottle extends React.Component {
       created_at: date_time,
     };
     // return;
+    if (!isEmptyObject(data)) {
+      dispatchBottleCreate(data);
+    }
   }
 
   getTimeAMPM(data) {
@@ -322,4 +328,15 @@ class AddBottle extends React.Component {
   }
 }
 
-export default AddBottle;
+const mapStateToProps = state => ({
+  card: state.bottle,
+  activeBaby: getActiveBaby(state),
+});
+
+const mapDispatchToProps = {
+  dispatchBottleCreate: data => handleBottleCreate(data),
+  dispatchClearCard: () => clearMsg(),
+  dispatchResetAuthState: () => resetAuthState(),
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(AddBottle);

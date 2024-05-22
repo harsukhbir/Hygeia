@@ -1,9 +1,11 @@
 import React from 'react';
+import {connect} from 'react-redux';
 import {View, Text, ScrollView, TouchableOpacity, Image} from 'react-native';
 import TextInput from '../../../src/components/TextInput';
 import ButtonComponent from '../../../src/components/ButtonComponent';
 import {Images} from '../../../src/assets/images';
 import styles from './styles';
+import {resetAuthState} from '../../store/slices/authSlice';
 
 class BreastfeedEntryDetails extends React.Component {
   constructor(props) {
@@ -115,9 +117,8 @@ class BreastfeedEntryDetails extends React.Component {
   }
 }
 
-// const mapDispatchToProps = {
-//   dispatchResetAuthState: () => authActions.resetAuthState(),
-// };
+const mapDispatchToProps = {
+  dispatchResetAuthState: () => resetAuthState(),
+};
 
-// export default connect(null, mapDispatchToProps)(BreastfeedEntryDetails);
-export default BreastfeedEntryDetails;
+export default connect(null, mapDispatchToProps)(BreastfeedEntryDetails);

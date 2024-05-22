@@ -1,9 +1,11 @@
 import React, {Component} from 'react';
 import {View, Text, Image, ScrollView, TouchableOpacity} from 'react-native';
 import {Images} from '../../../../src/assets/images';
+import {connect} from 'react-redux';
 import styles from './styles';
 import VideoModal from './VideoModal';
 import LoadingIndicator from '../../../components/LoadingIndicator';
+import {loadingEnd, loadingStart} from '../../../store/slices/commonSlice';
 
 class EvolveVideos extends Component {
   constructor() {
@@ -16,13 +18,13 @@ class EvolveVideos extends Component {
   }
 
   setModalVisible = id => {
-    // const {dispatchLoadingStart, dispatchLoadingEnd} = this.props;
+    const {dispatchLoadingStart, dispatchLoadingEnd} = this.props;
     // this.setState({ isLoading: true });
-    // dispatchLoadingStart();
+    dispatchLoadingStart();
     fetch(`https://player.vimeo.com/video/${id}/config`)
       .then(res => res.json())
       .then(res => {
-        // dispatchLoadingEnd();
+        dispatchLoadingEnd();
         this.setState({
           modalVisible: true,
           tutorialsVideo:
@@ -30,7 +32,7 @@ class EvolveVideos extends Component {
         });
       })
       .catch(err => {
-        // dispatchLoadingEnd();
+        dispatchLoadingEnd();
       });
     // this.setState({ modalVisible: visible, tutorialsVideo: video });
   };
@@ -181,10 +183,9 @@ class EvolveVideos extends Component {
   }
 }
 
-// const mapDispatchToProps = {
-//   dispatchLoadingStart: () => start(),
-//   dispatchLoadingEnd: () => end(),
-// };
+const mapDispatchToProps = {
+  dispatchLoadingStart: () => loadingStart(),
+  dispatchLoadingEnd: () => loadingEnd(),
+};
 
-// export default connect(null, mapDispatchToProps)(EvolveVideos);
-export default EvolveVideos;
+export default connect(null, mapDispatchToProps)(EvolveVideos);

@@ -1,4 +1,5 @@
 import React from 'react';
+import {connect} from 'react-redux';
 import {
   View,
   Text,
@@ -9,17 +10,20 @@ import {
   LayoutAnimation,
 } from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-// import { Switch } from 'native-base';
-// import MaterialIcon from "react-native-vector-icons/MaterialIcons";
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import TextInput from '../../../src/components/TextInput';
 import ButtonComponent from '../../../src/components/ButtonComponent';
 import {Images} from '../../../src/assets/images';
-import {showAlert} from '../../../src/utils/native';
+import {isEmptyObject, showAlert} from '../../../src/utils/native';
 import TimePicker from 'react-native-24h-timepicker';
 import CustomTimePicker from '../../components/CustomTimePicker';
 import moment from 'moment';
 import styles from './styles';
+import {
+  clearMsg,
+  handleBreastfeedCreate,
+} from '../../store/slices/breastfeedSlice';
+import {resetAuthState} from '../../store/slices/authSlice';
 import {getActiveBaby} from '../../store/selectors';
 
 class AddBreastfeedEntry extends React.Component {
@@ -71,10 +75,11 @@ class AddBreastfeedEntry extends React.Component {
   componentDidUpdate() {
     const {
       card: {msg},
-
+      dispatchClearCard,
       navigation,
     } = this.props;
     if (msg === 'ADD_BREASTFEED_SUCCESS') {
+      dispatchClearCard();
       this.setState(() => {
         showAlert(
           'Success',
@@ -290,6 +295,7 @@ class AddBreastfeedEntry extends React.Component {
       this.state;
 
     const {
+      dispatchBreastfeedCreate,
       activeBaby,
       navigation: {
         state: {params},
@@ -352,6 +358,10 @@ class AddBreastfeedEntry extends React.Component {
       note: NotesValue,
       created_at: date_time,
     };
+
+    if (!isEmptyObject(data)) {
+      dispatchBreastfeedCreate(data);
+    }
   }
 
   checkTimeLen(value) {
@@ -699,8 +709,14 @@ class AddBreastfeedEntry extends React.Component {
 }
 
 const mapStateToProps = state => ({
-  card: state.breastfeedReducer,
+  card: state.breastfeed,
   activeBaby: getActiveBaby(state),
 });
 
-export default AddBreastfeedEntry;
+const mapDispatchToProps = {
+  dispatchBreastfeedCreate: data => handleBreastfeedCreate(data),
+  dispatchResetAuthState: () => resetAuthState(),
+  dispatchClearCard: () => clearMsg(),
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(AddBreastfeedEntry);

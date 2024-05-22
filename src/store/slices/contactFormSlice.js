@@ -45,7 +45,7 @@ const contactFormSlice = createSlice({
   name: 'contactForm',
   initialState,
   reducers: {},
-  extraReducers: builder => {
+  extras: builder => {
     builder
       .addCase(handleProductForm.fulfilled, state => {
         state.isProductFormSuccessful = true;

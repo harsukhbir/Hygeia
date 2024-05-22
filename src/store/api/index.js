@@ -9,7 +9,7 @@ export function getUnauthenticatedInstance() {
     headers: {
       'device-id': getUniqueId(),
       Authorization: `${'Bearer' + ' '}${
-        store?.getState()?.authReducer?.user?.result?.access_token
+        store?.getState()?.auth?.user?.result?.access_token
       }`,
       HEADER_LOCALE_TIME: getTimeZone(),
     },
@@ -23,7 +23,7 @@ export function getAuthenticatedInstance() {
     headers: {
       'device-id': getUniqueId(),
       Authorization: `${'Bearer' + ' '}${
-        store?.getState()?.authReducer?.user?.result?.access_token
+        store?.getState()?.auth?.user?.result?.access_token
       }`,
       HEADER_LOCALE_TIME: getTimeZone(),
     },

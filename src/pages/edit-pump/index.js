@@ -1,4 +1,5 @@
 import React from 'react';
+import {connect} from 'react-redux';
 import {
   View,
   Text,
@@ -14,11 +15,13 @@ import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import TextInput from '../../../src/components/TextInput';
 import ButtonComponent from '../../../src/components/ButtonComponent';
 import {Images} from '../../../src/assets/images';
-import {showAlert} from '../../../src/utils/native';
+import {isEmptyObject, showAlert} from '../../../src/utils/native';
 import TimePicker from 'react-native-24h-timepicker';
 import moment from 'moment';
 import styles from './styles';
 import CustomTimePicker from '../../components/CustomTimePicker';
+import {CLEAR_MSG, handlePumpEdit} from '../../store/slices/pumpSlice';
+import {resetAuthState} from '../../store/slices/authSlice';
 
 class EditPumpEntry extends React.Component {
   constructor(props) {
@@ -28,10 +31,6 @@ class EditPumpEntry extends React.Component {
     let tmpLeft = this.checkTimeLen(card.pumpEdit.total_time).split(':');
     let leftTimeCount = `${tmpLeft[0]}m ${tmpLeft[1]}s`;
     let LeftTotalSeconds = parseInt(tmpLeft[0]) * 60 + parseInt(tmpLeft[1]);
-
-    // let tmpRight = this.checkTimeLen(card.pumpEdit.right_breast).split(":");
-    // let rightTimeCount = `${tmpRight[0]}m ${tmpRight[1]}s`;
-    // let RightTotalSeconds = parseInt(tmpRight[0])*60 + parseInt(tmpRight[1]);
 
     let TotalMinutes = parseInt(tmpLeft[0]);
     let TotalSeconds = parseInt(tmpLeft[1]);
@@ -66,11 +65,11 @@ class EditPumpEntry extends React.Component {
   componentDidUpdate() {
     const {
       card: {msg},
-      // dispatchClearCard,
+      dispatchClearCard,
       navigation,
     } = this.props;
     if (msg === 'EDIT_PUMP_SUCCESS') {
-      // dispatchClearCard();
+      dispatchClearCard();
       this.setState(() => {
         showAlert('Success', 'baby pump update successfully.', '', () => {
           navigation.navigate('Track', {activeTab: 'Pump'});
@@ -330,10 +329,10 @@ class EditPumpEntry extends React.Component {
       note: NotesValue,
     };
     // return;
-    // const {dispatchPumpEdit} = this.props;
-    // if (!isEmptyObject(data)) {
-    //   dispatchPumpEdit(data);
-    // }
+    const {dispatchPumpEdit} = this.props;
+    if (!isEmptyObject(data)) {
+      dispatchPumpEdit(data);
+    }
   }
 
   getTimeAMPM(data) {
@@ -756,14 +755,14 @@ class EditPumpEntry extends React.Component {
   }
 }
 
-// const mapStateToProps = state => ({
-//   card: state.pumpReducer,
-// });
+const mapStateToProps = state => ({
+  card: state.pump,
+});
 
-// const mapDispatchToProps = {
-//   dispatchPumpEdit: data => pumpActions.handlePumpEdit(data),
-//   dispatchClearCard: () => pumpActions.clearMsg(),
-//   dispatchResetAuthState: () => authActions.resetAuthState(),
-// };
+const mapDispatchToProps = {
+  dispatchPumpEdit: data => handlePumpEdit(data),
+  dispatchClearCard: () => CLEAR_MSG(),
+  dispatchResetAuthState: () => resetAuthState(),
+};
 
-export default EditPumpEntry;
+export default connect(mapStateToProps, mapDispatchToProps)(EditPumpEntry);

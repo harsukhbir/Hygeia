@@ -1,4 +1,5 @@
 import React from 'react';
+import {connect} from 'react-redux';
 import {
   View,
   Text,
@@ -19,11 +20,18 @@ import {
   MenuTrigger,
 } from 'react-native-popup-menu';
 import moment from 'moment';
-// ! fix the foucused
-// import {withNavigationFocus} from '@react-navigation/native';
+import {withNavigationFocus} from 'react-navigation';
 import styles from '../styles';
 import SetAlarmComponent from '../components/SetAlarmComponent';
+import {
+  editGetDataBreastfeed,
+  handleBreastfeedDelete,
+  handleBreastfeedListing,
+} from '../../../store/slices/breastfeedSlice';
 import {getActiveBaby} from '../../../store/selectors';
+import {resetAuthState} from '../../../store/slices/authSlice';
+import {fetchPrevAlarmValue} from '../../../store/slices/trackSlice';
+import {setRefreshData} from '../../../store/slices/commonSlice';
 
 class BreastfeedCards extends React.Component {
   constructor(props) {
@@ -55,23 +63,22 @@ class BreastfeedCards extends React.Component {
     }
 
     if (
-      prevProps.tabReducer.activeTab !== this.props.tabReducer.activeTab &&
+      prevProps.tab.activeTab !== this.props.tab.activeTab &&
       activeBaby &&
       activeBaby.id
     ) {
-      if (this.props.tabReducer.activeTab === 'Track') {
+      if (this.props.tab.activeTab === 'Track') {
         this.fetchAlarmValue(activeBaby);
       }
     }
-    // if(prevProps.tabReducer.activeT)
+    // if(prevProps.tab.activeT)
 
     if (
-      prevProps.tabReducer.trackActiveTab !==
-        this.props.tabReducer.trackActiveTab &&
+      prevProps.tab.trackActiveTab !== this.props.tab.trackActiveTab &&
       activeBaby &&
       activeBaby.id
     ) {
-      if (this.props.tabReducer.trackActiveTab === 'Breastfeed') {
+      if (this.props.tab.trackActiveTab === 'Breastfeed') {
         /// FETCH ALARA HERE
         this.fetchAlarmValue(activeBaby);
       }
@@ -79,18 +86,18 @@ class BreastfeedCards extends React.Component {
 
     if (this.props.refreshData) {
       this.breastFeed(currentDate, activeBaby);
-      // this.props.dispatchRefresh(false);
+      this.props.dispatchRefresh(false);
     }
   }
 
   fetchAlarmValue(activeBaby) {
-    // const {dispatchGetAlarm} = this.props;
+    const {dispatchGetAlarm} = this.props;
     if (activeBaby) {
       const data = {
         baby_id: activeBaby.id,
         type: 'breastfeed',
       };
-      // dispatchGetAlarm(data);
+      dispatchGetAlarm(data);
     }
   }
 
@@ -112,27 +119,24 @@ class BreastfeedCards extends React.Component {
   }
 
   HandleViewNotes(data) {
-    this.setState({opened: false, ViewNoteModal: data?.id});
+    this.setState({opened: false, ViewNoteModal: data.id});
   }
 
   HandleDeleteBreastfeed(key) {
     const data = {
       breastfeed_id: key,
     };
-    // const {dispatchBreastfeedDelete} = this.props;
+    const {dispatchBreastfeedDelete} = this.props;
     if (!isEmptyObject(data)) {
-      // dispatchBreastfeedDelete(data);
+      dispatchBreastfeedDelete(data);
       this.setState({opened: false});
     }
   }
 
   HandleEditBreastfeed(data) {
-    const {
-      navigation,
-      // dispatchEditBreastfeed
-    } = this.props;
+    const {navigation, dispatchEditBreastfeed} = this.props;
     if (!isEmptyObject(data)) {
-      // dispatchEditBreastfeed(data);
+      dispatchEditBreastfeed(data);
     }
     this.setState({
       opened: false,
@@ -166,7 +170,7 @@ class BreastfeedCards extends React.Component {
   };
 
   convertDataIntoHM(data) {
-    let tmp = data?.split(':');
+    let tmp = data.split(':');
     if (Number(tmp[0]) > 0) {
       // let totalSecs = (Number(tmp[0])*60)+Number(tmp[1]);
       // let newTime = this.toHHMMSS(totalSecs).split(":");
@@ -182,7 +186,7 @@ class BreastfeedCards extends React.Component {
   }
 
   hasTime(data) {
-    let _l = data?.split(':');
+    let _l = data.split(':');
     if (Number(_l[0]) > 0 || Number(_l[1] > 0)) {
       return true;
     }
@@ -196,14 +200,14 @@ class BreastfeedCards extends React.Component {
   render() {
     const {breastfeed, isFocused, track, refreshData} = this.props;
     const {modalVisible, ViewNoteModal, isAlarmModal} = this.state;
-    const alarm = track?.breastfeed || [];
+    const alarm = track.breastfeed || [];
 
     return (
       <View style={styles.trackContainer}>
         {isAlarmModal && (
           <SetAlarmComponent
             isOpen={isAlarmModal}
-            prevAlarm={alarm?.length > 0 ? alarm[0] : null}
+            prevAlarm={alarm.length > 0 ? alarm[0] : null}
             onClose={() => {
               this.setState({
                 isAlarmModal: false,
@@ -219,23 +223,23 @@ class BreastfeedCards extends React.Component {
         <View style={styles.trackTop}>
           <View style={styles.sessionsBox}>
             <View style={styles.sessionsIcon}>
-              <Image source={Images.BreastfeedCards?.sessionIcon} />
+              <Image source={Images.BreastfeedCards.sessionIcon} />
             </View>
             <Text style={styles.sessionsTitle}>
               {breastfeed &&
-                breastfeed?.breastfeedListing?.result &&
-                breastfeed?.breastfeedListing?.result?.length}{' '}
+                breastfeed.breastfeedListing.result &&
+                breastfeed.breastfeedListing.result.length}{' '}
               Sessions
             </Text>
           </View>
           <TouchableOpacity onPress={() => this.setState({isAlarmModal: true})}>
             <View style={styles.setAlarm}>
               <Image
-                source={Images.BreastfeedCards?.alarmIcon}
+                source={Images.BreastfeedCards.alarmIcon}
                 style={styles.setAlarmIcon}
               />
               <Text style={styles.setAlarmTitle}>
-                {alarm?.length > 0 ? this.getTime(alarm[0]) : 'set'}
+                {alarm.length > 0 ? this.getTime(alarm[0]) : 'set'}
               </Text>
             </View>
           </TouchableOpacity>
@@ -243,28 +247,28 @@ class BreastfeedCards extends React.Component {
         <ScrollView
           style={styles.scrollView}
           contentContainerStyle={{paddingBottom: 70}}>
-          {breastfeed?.breastfeedListing?.error ? (
+          {breastfeed.breastfeedListing.error ? (
             <Text style={styles.listError}>No breastfeed sessions yet</Text>
           ) : (
             <View style={styles.trackList}>
               {breastfeed &&
-                breastfeed?.breastfeedListing?.result &&
-                breastfeed?.breastfeedListing?.result?.map((data, key) => {
+                breastfeed.breastfeedListing.result &&
+                breastfeed.breastfeedListing.result.map((data, key) => {
                   return (
                     <View
                       style={[styles.trackListItem, {paddingVertical: 15}]}
                       key={`track${key}`}>
                       <Text style={styles.startTime}>
-                        {this.convertTime(data?.start_time)}
+                        {this.convertTime(data.start_time)}
                       </Text>
                       <View style={styles.breastUnits}>
-                        {this.hasTime(data?.left_breast) && (
+                        {this.hasTime(data.left_breast) && (
                           <View style={styles.leftBreast}>
                             <Text style={styles.roundFrame}>L</Text>
                             <Text style={styles.listText}>Left breast</Text>
                           </View>
                         )}
-                        {this.hasTime(data?.right_breast) && (
+                        {this.hasTime(data.right_breast) && (
                           <View style={styles.rightBreast}>
                             <Text style={styles.roundFrame}>R </Text>
                             <Text style={styles.listText}>Right breast</Text>
@@ -272,29 +276,29 @@ class BreastfeedCards extends React.Component {
                         )}
                       </View>
                       <Text style={styles.totalTime}>
-                        {this.convertDataIntoHM(data?.total_time)}
+                        {this.convertDataIntoHM(data.total_time)}
                       </Text>
                       <View style={styles.trackMenu}>
                         <Menu
-                          opened={this.state.opened === data?.id}
+                          opened={this.state.opened === data.id}
                           onBackdropPress={() =>
                             this.setState({opened: false})
                           }>
                           <MenuTrigger
-                            onPress={() => this.setState({opened: data?.id})}
+                            onPress={() => this.setState({opened: data.id})}
                             style={styles.menuTrigger}>
                             <Image
-                              source={Images.BreastfeedCards?.dotsIcon}
+                              source={Images.BreastfeedCards.dotsIcon}
                               style={styles.dotsIcon}
                             />
                           </MenuTrigger>
                           <MenuOptions style={styles.menuOptionS}>
-                            {data?.note ? (
+                            {data.note ? (
                               <MenuOption
                                 style={styles.menuOption}
                                 onSelect={() => this.HandleViewNotes(data)}>
                                 <Image
-                                  source={Images.BreastfeedCards?.detailsIcon}
+                                  source={Images.BreastfeedCards.detailsIcon}
                                 />
                                 <Text style={styles.menuOptionText}>
                                   View Notes
@@ -307,7 +311,7 @@ class BreastfeedCards extends React.Component {
                                 style={styles.menuOptionInner}
                                 onPress={() => this.HandleEditBreastfeed(data)}>
                                 <Image
-                                  source={Images.BreastfeedCards?.editIcon}
+                                  source={Images.BreastfeedCards.editIcon}
                                 />
                                 <Text style={styles.menuOptionText}>Edit</Text>
                               </TouchableOpacity>
@@ -316,10 +320,10 @@ class BreastfeedCards extends React.Component {
                               <TouchableOpacity
                                 style={styles.menuOptionInner}
                                 onPress={() =>
-                                  this.HandleDeleteBreastfeed(data?.id)
+                                  this.HandleDeleteBreastfeed(data.id)
                                 }>
                                 <Image
-                                  source={Images.BreastfeedCards?.deleteIcon}
+                                  source={Images.BreastfeedCards.deleteIcon}
                                 />
                                 <Text style={styles.menuOptionText}>
                                   Delete
@@ -331,13 +335,13 @@ class BreastfeedCards extends React.Component {
                         <Modal
                           animationType="slide"
                           transparent={true}
-                          visible={ViewNoteModal === data?.id}
+                          visible={ViewNoteModal === data.id}
                           onRequestClose={() => {
                             Alert.alert('Modal has been closed.');
                           }}>
                           <View style={styles.centeredView}>
                             <View style={styles.modalView}>
-                              <Text style={styles.modalText}>{data?.note}</Text>
+                              <Text style={styles.modalText}>{data.note}</Text>
                               <TouchableHighlight
                                 style={styles.closeModal}
                                 onPress={() => {
@@ -361,7 +365,7 @@ class BreastfeedCards extends React.Component {
         <TouchableOpacity
           style={styles.addButton}
           onPress={() => this.redirectToAddEntry()}>
-          <Image source={Images.BreastfeedCards?.plusIcon} />
+          <Image source={Images.BreastfeedCards.plusIcon} />
         </TouchableOpacity>
         <Modal
           animationType="slide"
@@ -405,23 +409,23 @@ class BreastfeedCards extends React.Component {
 }
 
 const mapStateToProps = state => ({
-  breastfeed: state.breastfeedReducer,
+  breastfeed: state.breastfeed,
   activeBaby: getActiveBaby(state),
-  tabReducer: state.tabReducer,
-  track: state.trackReducer,
-  refreshData: state.commonReducer.refreshData,
+  tab: state.tab,
+  track: state.track,
+  refreshData: state.common.refreshData,
 });
 
-// const mapDispatchToProps = {
-//   dispatchBreastfeedListing: data =>
-//     breastfeedActions.handleBreastfeedListing(data),
-//   dispatchBreastfeedDelete: data =>
-//     breastfeedActions.handleBreastfeedDelete(data),
-//   dispatchEditBreastfeed: data => breastfeedActions.EditGetDataBreastfeed(data),
-//   dispatchResetAuthState: () => authActions.resetAuthState(),
-//   dispatchGetAlarm: data => fetchPrevAlarmValue(data),
-//   dispatchRefresh: flag => commonActions.setRefreshData(flag),
-// };
+const mapDispatchToProps = {
+  dispatchBreastfeedListing: data => handleBreastfeedListing(data),
+  dispatchBreastfeedDelete: data => handleBreastfeedDelete(data),
+  dispatchEditBreastfeed: data => editGetDataBreastfeed(data),
+  dispatchResetAuthState: () => resetAuthState(),
+  dispatchGetAlarm: data => fetchPrevAlarmValue(data),
+  dispatchRefresh: flag => setRefreshData(flag),
+};
 
-// export default connect(mapStateToProps, mapDispatchToProps)(BreastfeedCards);
-export default BreastfeedCards;
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(withNavigationFocus(BreastfeedCards));

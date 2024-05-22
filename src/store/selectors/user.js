@@ -1,6 +1,6 @@
 import {createSelector} from 'reselect';
 
 export const getActiveBaby = createSelector(
-  state => state.userReducer,
+  state => state.user,
   user => user.babyEdit,
 );

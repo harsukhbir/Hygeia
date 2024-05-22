@@ -1,19 +1,23 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {View, Text, Modal, Switch} from 'react-native';
-
+import {connect} from 'react-redux';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import moment from 'moment';
 import {showAlert} from '../../../../src/utils/native';
 
 import styles from '../styles';
+import {getActiveBaby} from '../../../store/selectors';
+import {setAlarmAPI, updateAlarmAPI} from '../../../store/slices/alarmSlice';
 
 const SetAlarmComponent = ({
   isOpen,
   onClose,
   title = 'Alarm',
   notificationTitle,
+  alarm,
   type,
-  // eslint-disable-next-line no-shadow
+
+  resetAlarmFlag,
   // eslint-disable-next-line no-shadow
   setAlarmAPI,
   // eslint-disable-next-line no-shadow
@@ -25,27 +29,27 @@ const SetAlarmComponent = ({
   const [isEnabled, setIsEnabled] = useState(false);
   const [date, setDate] = useState(moment());
 
-  // useEffect(() => {
-  //   if (alarm.isAdded) {
-  //     resetAlarmFlag();
-  //     onClose();
-  //     if (prevAlarm) {
-  //       showAlert('Success', 'Alarm updated successfully', '', () => {});
-  //     } else {
-  //       showAlert('Success', 'Alarm added successfully', '', () => {});
-  //     }
-  //   }
-  //   if (prevAlarm) {
-  //     if (prevAlarm.user_datetime) {
-  //       setDate(moment(prevAlarm.user_datetime));
-  //     }
-  //     setIsEnabled(prevAlarm.repeat === 'true' ? true : false);
-  //   }
+  useEffect(() => {
+    if (alarm.isAdded) {
+      resetAlarmFlag();
+      onClose();
+      if (prevAlarm) {
+        showAlert('Success', 'Alarm updated successfully', '', () => {});
+      } else {
+        showAlert('Success', 'Alarm added successfully', '', () => {});
+      }
+    }
+    if (prevAlarm) {
+      if (prevAlarm.user_datetime) {
+        setDate(moment(prevAlarm.user_datetime));
+      }
+      setIsEnabled(prevAlarm.repeat === 'true' ? true : false);
+    }
 
-  //   return () => {
-  //     resetAlarmFlag();
-  //   };
-  // }, [alarm.isAdded]);
+    return () => {
+      resetAlarmFlag();
+    };
+  }, [alarm.isAdded]);
 
   const saveAlarm = () => {
     if (!date.isAfter(moment())) {
@@ -139,16 +143,15 @@ const SetAlarmComponent = ({
   );
 };
 
-// const mapStateToProps = state => ({
-//   alarm: state.alarmReducer,
-//   activeBaby: getActiveBaby(state),
-// });
+const mapStateToProps = state => ({
+  alarm: state.alarm,
+  activeBaby: getActiveBaby(state),
+});
 
-// const mapDispatchToProps = {
-//   resetAlarmFlag,
-//   setAlarmAPI,
-//   updateAlarmAPI,
-// };
+const mapDispatchToProps = {
+  //   resetAlarmFlag,
+  setAlarmAPI,
+  updateAlarmAPI,
+};
 
-// export default connect(mapStateToProps, mapDispatchToProps)(SetAlarmComponent);
-export default SetAlarmComponent;
+export default connect(mapStateToProps, mapDispatchToProps)(SetAlarmComponent);

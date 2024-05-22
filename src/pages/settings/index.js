@@ -11,11 +11,15 @@ import {
 } from 'react-native';
 import {Images} from '../../../src/assets/images';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
-// import LanguageSwitcher from "../../../src/components/LanguageSwitcher";
 import ButtonComponent from '../../../src/components/ButtonComponent';
-// import { translate } from "../../../src/locales/i18n";
-
 import styles from './styles';
+import {setActiveTab} from '../../store/slices/tabSlice';
+import {
+  EditGetDataBaby,
+  deleteBadyProfile,
+  getBadyProfile,
+  updateUserNotification,
+} from '../../store/slices/userSlice';
 
 class SettingsScreen extends React.Component {
   constructor(props) {
@@ -29,7 +33,7 @@ class SettingsScreen extends React.Component {
   }
 
   componentWillUnmount() {
-    // this.props.dispatchSetActiveTab('Dashboard');
+    this.props.dispatchSetActiveTab('Dashboard');
   }
 
   componentDidMount() {
@@ -37,31 +41,30 @@ class SettingsScreen extends React.Component {
     getUserNotification();
   }
 
-  // componentDidUpdate(prevProps) {
-  //   const {userDetails, dispatchUserProfileGet} = this.props;
-  //   if (
-  //     prevProps.userDetails.babyDelete === false &&
-  //     userDetails.babyDelete === true
-  //   ) {
-  //     dispatchUserProfileGet();
-  //   }
+  componentDidUpdate(prevProps) {
+    const {userDetails, dispatchUserProfileGet} = this.props;
+    if (
+      prevProps.userDetails.babyDelete === false &&
+      userDetails.babyDelete === true
+    ) {
+      dispatchUserProfileGet();
+    }
 
-  //   let notification = prevProps.userDetails.notification;
-  //   let newNotification = userDetails.notification;
+    let notification = prevProps.userDetails.notification;
+    let newNotification = userDetails.notification;
 
-  //   if (JSON.stringify(notification) !== JSON.stringify(newNotification)) {
-  //     this.setState({
-  //       bottlesisEnabled: newNotification.bottle,
-  //       breastfeedisEnabled: newNotification.breastfeed,
-  //       pumpisEnabled: newNotification.pump,
-  //     });
-  //   }
-  // }
+    if (JSON.stringify(notification) !== JSON.stringify(newNotification)) {
+      this.setState({
+        bottlesisEnabled: newNotification.bottle,
+        breastfeedisEnabled: newNotification.breastfeed,
+        pumpisEnabled: newNotification.pump,
+      });
+    }
+  }
 
   logOutHandler() {
-    console.log('log out clicked');
-    // const {dispatchResetAuthState} = this.props;
-    // dispatchResetAuthState();
+    const {dispatchResetAuthState} = this.props;
+    dispatchResetAuthState();
   }
 
   breastfeedtoggleSwitch() {
@@ -114,10 +117,7 @@ class SettingsScreen extends React.Component {
   }
 
   editBabyProfile(data) {
-    const {
-      navigation,
-      // dispatchEditBaby
-    } = this.props;
+    const {navigation, dispatchEditBaby} = this.props;
     navigation.navigate('EditProfile', {data});
   }
 
@@ -130,14 +130,13 @@ class SettingsScreen extends React.Component {
           text: 'OK',
           style: 'destructive',
           onPress: () => {
-            console.log('alert clicked');
-            // const {dispatchDeleteBaby} = this.props;
+            const {dispatchDeleteBaby} = this.props;
 
-            // const data = {
-            //   babyprofile_id: value.id,
-            // };
+            const data = {
+              babyprofile_id: value.id,
+            };
 
-            // dispatchDeleteBaby(data);
+            dispatchDeleteBaby(data);
           },
         },
         {
@@ -158,12 +157,9 @@ class SettingsScreen extends React.Component {
 
   render() {
     const {bottlesisEnabled, breastfeedisEnabled, pumpisEnabled} = this.state;
-    // const {auth, userDetails} = this.props;
-    // const {user} = auth;
-    // const {babyDetails} = userDetails;
-
-    const user = {};
-    const babyDetails = {};
+    const {auth, userDetails} = this.props;
+    const {user} = auth;
+    const {babyDetails} = userDetails;
 
     return (
       <View style={styles.container}>
@@ -184,7 +180,7 @@ class SettingsScreen extends React.Component {
               Change Password
             </Text>
           </View>
-          {babyDetails?.map(el => {
+          {babyDetails.map(el => {
             return (
               <View style={styles.babyAdd}>
                 <View style={styles.babyTitleIcon}>
@@ -355,20 +351,18 @@ class SettingsScreen extends React.Component {
   }
 }
 
-// const mapStateToProps = state => ({
-//   auth: state.authReducer,
-//   userDetails: state.userReducer,
-// });
+const mapStateToProps = state => ({
+  auth: state.auth,
+  userDetails: state.user,
+});
+const mapDispatchToProps = {
+  //   dispatchResetAuthState: () => handleLogout(),
+  dispatchEditBaby: data => EditGetDataBaby(data),
+  dispatchDeleteBaby: data => deleteBadyProfile(data),
+  dispatchUserProfileGet: () => getBadyProfile(),
+  updateUserNotification: data => updateUserNotification(data),
+  //   getUserNotification: () => getUserNotification(),
+  dispatchSetActiveTab: data => setActiveTab(data),
+};
 
-// const mapDispatchToProps = {
-//   dispatchResetAuthState: () => handleLogout(),
-//   dispatchEditBaby: data => userAction.EditGetDataBaby(data),
-//   dispatchDeleteBaby: data => userAction.deleteBadyProfile(data),
-//   dispatchUserProfileGet: () => userAction.getBadyProfile(),
-//   updateUserNotification: data => userAction.updateUserNotification(data),
-//   getUserNotification: () => userAction.getUserNotification(),
-//   dispatchSetActiveTab: data => setActiveTab(data),
-// };
-
-// export default connect(mapStateToProps, mapDispatchToProps)(SettingsScreen);
-export default SettingsScreen;
+export default connect(mapStateToProps, mapDispatchToProps)(SettingsScreen);

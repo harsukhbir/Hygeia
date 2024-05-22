@@ -1,5 +1,12 @@
 import React from 'react';
-import {View, Image, Text, TouchableOpacity, Keyboard} from 'react-native';
+import {
+  View,
+  Image,
+  Picker,
+  Text,
+  TouchableOpacity,
+  Keyboard,
+} from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import {Images} from '../../../../src/assets/images';
