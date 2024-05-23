@@ -1,8 +1,10 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
-import {loadingEnd, loadingStart} from './commonSlice';
 import Services from '../../services/services';
-import {showAPIErrorAlert} from '../../utils/native';
+import {showAPIErrorAlert, showAlert} from '../../utils/native';
+import {getStartedSuccess} from './authSlice';
+import {loadingStart, loadingEnd} from './commonSlice';
 
+// Initial state
 const initialState = {
   isLoading: false,
   babyDelete: false,
@@ -17,8 +19,9 @@ const initialState = {
   },
 };
 
-export const getBadyProfile = createAsyncThunk(
-  'user/getBadyProfile',
+// Async thunks
+export const getBabyProfile = createAsyncThunk(
+  'user/getBabyProfile',
   async (_, {dispatch}) => {
     dispatch(loadingStart());
     try {
@@ -32,13 +35,13 @@ export const getBadyProfile = createAsyncThunk(
   },
 );
 
-export const deleteBadyProfile = createAsyncThunk(
-  'user/deleteBadyProfile',
+export const deleteBabyProfile = createAsyncThunk(
+  'user/deleteBabyProfile',
   async (data, {dispatch}) => {
     dispatch(loadingStart());
     try {
       const response = await Services.BabyProfileDelete(data);
-      dispatch(deleteBabySucess(response));
+      dispatch(deleteBabySuccess(response));
       dispatch(loadingEnd());
     } catch (error) {
       dispatch(deleteBabyFailed(error));
@@ -63,7 +66,7 @@ export const updateProfileData = createAsyncThunk(
         updateData.push(el);
         return el;
       });
-      dispatch(updateProfileSucess(updateData));
+      dispatch(updateProfileSuccess(updateData));
       navigation.goBack();
       dispatch(loadingEnd());
     } catch (error) {
@@ -74,10 +77,82 @@ export const updateProfileData = createAsyncThunk(
   },
 );
 
+export const createProfiles = createAsyncThunk(
+  'user/createProfiles',
+  async (data, {dispatch}) => {
+    dispatch(loadingStart());
+    try {
+      await Services.CreateProfiles(data);
+      dispatch(getStartedSuccess(true));
+      dispatch(loadingEnd());
+    } catch (error) {
+      showAPIErrorAlert(error);
+      dispatch(loadingEnd());
+    }
+  },
+);
+
+export const changePassword = createAsyncThunk(
+  'user/changePassword',
+  async (data, {dispatch}) => {
+    dispatch(loadingStart());
+    try {
+      await Services.handleChangePassword(data);
+      showAlert('Success', 'Password update successfully.', '', () => {});
+      dispatch(loadingEnd());
+    } catch (error) {
+      dispatch(loadingEnd());
+      showAPIErrorAlert(error);
+    }
+  },
+);
+
+export const updateUserNotification = createAsyncThunk(
+  'user/updateUserNotification',
+  async (data, {dispatch}) => {
+    dispatch(loadingStart());
+    try {
+      await Services.updateNotification(data);
+      showAlert(
+        'Success',
+        'Notification change updated successfully.',
+        '',
+        () => {},
+      );
+      dispatch(loadingEnd());
+    } catch (error) {
+      dispatch(loadingEnd());
+      showAPIErrorAlert(error);
+    }
+  },
+);
+
+export const getUserNotification = createAsyncThunk(
+  'user/getUserNotification',
+  async (_, {dispatch}) => {
+    dispatch(loadingStart());
+    try {
+      const response = await Services.getNotification();
+      dispatch(loadingEnd());
+      dispatch(updateUserNotification(response.data.result));
+    } catch (error) {
+      dispatch(loadingEnd());
+      showAPIErrorAlert(error);
+    }
+  },
+);
+
+// Slice
 const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
+    babyListingStart(state) {
+      state.isLoading = true;
+      state.isBabyLoaded = false;
+      state.babyDetails = [];
+      state.loadingError = null;
+    },
     babyListingSuccess(state, action) {
       state.isLoading = false;
       state.isBabyLoaded = true;
@@ -89,13 +164,19 @@ const userSlice = createSlice({
       state.isBabyLoaded = true;
       state.loadingError = action.payload;
     },
-    deleteBabySucess(state) {
+    deleteBabyStart(state) {
+      state.babyDelete = true;
+    },
+    deleteBabySuccess(state) {
       state.babyDelete = false;
     },
     deleteBabyFailed(state) {
       state.babyDelete = false;
     },
-    updateProfileSucess(state, action) {
+    updateProfileStart(state) {
+      state.isLoading = true;
+    },
+    updateProfileSuccess(state, action) {
       const {babyEdit} = state;
       const index = action.payload.findIndex(x => x.id === babyEdit.id);
       if (index > -1) {
@@ -108,7 +189,7 @@ const userSlice = createSlice({
     updateProfileFailed(state) {
       state.isLoading = false;
     },
-    EditGetDataBaby(state, action) {
+    editGetDataBaby(state, action) {
       state.babyEdit = action.payload;
     },
     updateUserNotification(state, action) {
@@ -140,7 +221,6 @@ const userSlice = createSlice({
         babyEdit.weight_lb = data.weight_lb;
         babyEdit.weight_oz = data.weight_oz;
       }
-
       const index = babyDetails.findIndex(x => x.id === data.babyprofile_id);
       if (index > -1) {
         babyDetails[index].height = data.height;
@@ -154,15 +234,18 @@ const userSlice = createSlice({
   },
 });
 
+// Exporting actions and reducer
 export const {
+  babyListingStart,
   babyListingSuccess,
   babyListingFailed,
-  deleteBabySucess,
+  deleteBabyStart,
+  deleteBabySuccess,
   deleteBabyFailed,
-  updateProfileSucess,
+  updateProfileStart,
+  updateProfileSuccess,
   updateProfileFailed,
-  EditGetDataBaby,
-  updateUserNotification,
+  editGetDataBaby,
   updateUserListedBabyDetail,
   resetBabyData,
 } = userSlice.actions;

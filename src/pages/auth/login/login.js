@@ -20,7 +20,13 @@ import styles from './styles';
 import {getDeviceId, getOS, getFirebaseToken} from '../../../services/device';
 import OtpInputs from '../../../../src/components/OtpInputs';
 import ButtonComponent from '../../../../src/components/ButtonComponent';
-import {handleLogIn, handleOtpInput} from '../../../store/slices/authSlice';
+import {
+  handleFBLogIn,
+  handleForgotPassword,
+  handleLogIn,
+  handleOtpInput,
+  handleVerifySignUpOTP,
+} from '../../../store/slices/authSlice';
 
 class LoginScreen extends React.Component {
   constructor(props) {
@@ -108,7 +114,8 @@ class LoginScreen extends React.Component {
     // const { navigation } = this.props;
     // navigation.navigate("Purchased");
     try {
-      // const device_token = await getFirebaseToken();
+      const device_token = await getFirebaseToken();
+      console.log('device token from login file: ', device_token);
       const device_id = await getDeviceId();
       const os_type = getOS();
 
@@ -270,10 +277,10 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = {
   dispatchLogin: data => handleLogIn(data),
-  // dispatchFBLogin: data => handleFBLogIn(data),
-  // dispatchVerifySignUpOTP: data => handleVerifySignUpOTP(data),
+  dispatchFBLogin: data => handleFBLogIn(data),
+  dispatchVerifySignUpOTP: data => handleVerifySignUpOTP(data),
   dispatchHandleOtpInput: data => handleOtpInput(data),
-  // dispatchForgotPassword: data => handleForgotPassword(data),
+  dispatchForgotPassword: data => handleForgotPassword(data),
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(LoginScreen);

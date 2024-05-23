@@ -17,6 +17,7 @@ import styles from './styles';
 import messaging from '@react-native-firebase/messaging';
 import {resetAuthState} from '../../store/slices/authSlice';
 import {getActiveBaby, getActiveScreen} from '../../store/selectors';
+import {fetchDashboardData} from '../../store/slices/dashboardSlice';
 
 class dashboardScreen extends React.Component {
   constructor(props) {
@@ -563,7 +564,8 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = {
-  //   dispatchDashboardListing: data => handleDashboard(data),
+  // dispatchDashboardListing: data => handleDashboard(data),
+  dispatchDashboardListing: data => fetchDashboardData(data),
   dispatchResetAuthState: () => resetAuthState(),
 };
 

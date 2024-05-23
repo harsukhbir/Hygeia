@@ -6,6 +6,8 @@ import LinearGradient from 'react-native-linear-gradient';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import GetStartedForm from './form';
 import styles from './styles';
+import {getStartedSuccess} from '../../../store/slices/authSlice';
+import {createProfiles} from '../../../store/slices/userSlice';
 
 class GetStartedScreen extends React.Component {
   submitForm(values) {
@@ -51,8 +53,8 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = {
-  //   dispatchGetStarted: data => authActions.getStartedSuccess(data),
-  //   dispatchCreateProfile: data => userAction.CreateProfiles(data),
+  dispatchGetStarted: data => getStartedSuccess(data),
+  dispatchCreateProfile: data => createProfiles(data),
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(GetStartedScreen);

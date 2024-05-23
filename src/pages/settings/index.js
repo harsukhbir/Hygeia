@@ -18,8 +18,10 @@ import {
   EditGetDataBaby,
   deleteBadyProfile,
   getBadyProfile,
+  getUserNotification,
   updateUserNotification,
 } from '../../store/slices/userSlice';
+import {handleLogout} from '../../store/slices/authSlice';
 
 class SettingsScreen extends React.Component {
   constructor(props) {
@@ -356,12 +358,12 @@ const mapStateToProps = state => ({
   userDetails: state.user,
 });
 const mapDispatchToProps = {
-  //   dispatchResetAuthState: () => handleLogout(),
+  dispatchResetAuthState: () => handleLogout(),
   dispatchEditBaby: data => EditGetDataBaby(data),
   dispatchDeleteBaby: data => deleteBadyProfile(data),
   dispatchUserProfileGet: () => getBadyProfile(),
   updateUserNotification: data => updateUserNotification(data),
-  //   getUserNotification: () => getUserNotification(),
+  getUserNotification: () => getUserNotification(),
   dispatchSetActiveTab: data => setActiveTab(data),
 };
 

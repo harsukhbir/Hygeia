@@ -8,6 +8,7 @@ import {isEmpty} from '../../../src/utils/native';
 import {translate} from '../../../src/locales/i18n';
 import styles from './styles';
 import {checkPasswordStrength} from '../../utils/passwordCheck';
+import {changePassword} from '../../store/slices/userSlice';
 
 class ChangePasswordScreen extends React.Component {
   constructor(props) {
@@ -203,7 +204,7 @@ class ChangePasswordScreen extends React.Component {
   }
 }
 const mapDispatchToProps = {
-  //   dispatchchangePassword: data => changePassword(data),
+  dispatchchangePassword: data => changePassword(data),
 };
 
 export default connect(null, mapDispatchToProps)(ChangePasswordScreen);

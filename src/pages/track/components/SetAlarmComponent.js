@@ -7,7 +7,11 @@ import {showAlert} from '../../../../src/utils/native';
 
 import styles from '../styles';
 import {getActiveBaby} from '../../../store/selectors';
-import {setAlarmAPI, updateAlarmAPI} from '../../../store/slices/alarmSlice';
+import {
+  resetAlarmMsg,
+  setAlarmAPI,
+  updateAlarmAPI,
+} from '../../../store/slices/alarmSlice';
 
 const SetAlarmComponent = ({
   isOpen,
@@ -49,7 +53,7 @@ const SetAlarmComponent = ({
     return () => {
       resetAlarmFlag();
     };
-  }, [alarm.isAdded]);
+  }, [alarm?.isAdded]);
 
   const saveAlarm = () => {
     if (!date.isAfter(moment())) {
@@ -151,6 +155,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = {
   //   resetAlarmFlag,
   setAlarmAPI,
+  resetAlarmMsg,
   updateAlarmAPI,
 };
 

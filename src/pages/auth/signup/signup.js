@@ -18,7 +18,11 @@ import {translate} from '../../../../src/locales/i18n';
 import SignupForm from './form';
 import styles from './styles';
 import {getFirebaseToken, getDeviceId, getOS} from '../../../services/device';
-import {handleSignUp} from '../../../store/slices/authSlice';
+import {
+  handleForgotPassword,
+  handleSignUp,
+  handleVerifySignUpOTP,
+} from '../../../store/slices/authSlice';
 
 class SignupScreen extends React.Component {
   constructor(props) {
@@ -74,7 +78,8 @@ class SignupScreen extends React.Component {
 
   async submitForm(values) {
     try {
-      // const device_token = await getFirebaseToken();
+      const device_token = await getFirebaseToken();
+      console.log('device token from signup file: ', device_token);
       const device_id = await getDeviceId();
       const os_type = getOS();
 
@@ -242,8 +247,8 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = {
   dispatchSignUp: data => handleSignUp(data),
-  // dispatchVerifySignUpOTP: data => handleVerifySignUpOTP(data),
-  // dispatchForgotPassword: data => handleForgotPassword(data),
+  dispatchVerifySignUpOTP: data => handleVerifySignUpOTP(data),
+  dispatchForgotPassword: data => handleForgotPassword(data),
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(SignupScreen);
