@@ -79,7 +79,6 @@ class SignupScreen extends React.Component {
   async submitForm(values) {
     try {
       const device_token = await getFirebaseToken();
-      console.log('device token from signup file: ', device_token);
       const device_id = await getDeviceId();
       const os_type = getOS();
 
@@ -88,7 +87,7 @@ class SignupScreen extends React.Component {
         values = {
           ...values,
           device_id,
-          // device_token,
+          device_token,
           os_type,
         };
         this.setState({email: values.email});

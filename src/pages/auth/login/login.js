@@ -115,7 +115,6 @@ class LoginScreen extends React.Component {
     // navigation.navigate("Purchased");
     try {
       const device_token = await getFirebaseToken();
-      console.log('device token from login file: ', device_token);
       const device_id = await getDeviceId();
       const os_type = getOS();
 
@@ -124,7 +123,7 @@ class LoginScreen extends React.Component {
         values = {
           ...values,
           device_id,
-          // device_token,
+          device_token,
           os_type,
         };
         console.log('login params', values);
