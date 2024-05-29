@@ -1,18 +1,18 @@
-import PropTypes from "prop-types";
-import React from "react";
-import { View, StyleSheet, Text, ActivityIndicator } from "react-native";
-import { Button } from "native-base";
-import { AppTheme } from "../utils/appTheme";
+import PropTypes from 'prop-types';
+import React from 'react';
+import {View, StyleSheet, Text, ActivityIndicator} from 'react-native';
+import {Button} from 'native-base';
+import {AppTheme} from '../utils/appTheme';
 
 const styles = StyleSheet.create({
   container: {},
   loginButton: {
-    width: "100%",
-    backgroundColor: "#fff",
-    textAlign: "center",
-    alignSelf: "center",
-    justifyContent: "center",
-    borderColor: "#fff",
+    width: '100%',
+    backgroundColor: '#fff',
+    textAlign: 'center',
+    alignSelf: 'center',
+    justifyContent: 'center',
+    borderColor: '#fff',
     elevation: 0,
     paddingVertical: 8,
     borderRadius: 4,
@@ -20,18 +20,18 @@ const styles = StyleSheet.create({
     maxWidth: 300,
   },
   loginButtonText: {
-    textAlign: "center",
-    alignSelf: "center",
+    textAlign: 'center',
+    alignSelf: 'center',
     fontSize: 20,
     lineHeight: 24,
-    fontWeight: "500",
-    textTransform: "uppercase",
+    fontWeight: '500',
+    textTransform: 'uppercase',
     color: AppTheme.primaryColor,
   },
   activityIndicator: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 
@@ -47,14 +47,9 @@ export default function ButtonComponent({
   return (
     <View style={[styles.container, style]}>
       <Button
-        style={[
-          styles.loginButton,
-          buttonStyle,
-          { opacity: disabled ? 0.5 : 1 },
-        ]}
+        style={[styles.loginButton, buttonStyle, {opacity: disabled ? 0.5 : 1}]}
         onPress={buttonClicked}
-        disabled={disabled}
-      >
+        disabled={disabled}>
         {!isLoading && (
           <Text style={[styles.loginButtonText, buttonTextStyle]}>
             {buttonText}
